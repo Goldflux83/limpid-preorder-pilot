@@ -104,6 +104,10 @@ export const content = {
       none: "Geen actieve iPad-sessies.",
       confirmation: "Typ de stationcode om alle iPad-sessies in te trekken.",
       submit: "Trek alle iPad-sessies in",
+      pinTitle: "Winkel-PIN roteren",
+      pin: "Nieuwe viercijferige PIN",
+      pinConfirmation: "Herhaal nieuwe PIN",
+      pinSubmit: "Roteer PIN en trek sessies in",
     },
     adminLogin: {
       eyebrow: "Beheer",

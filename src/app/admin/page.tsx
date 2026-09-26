@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Panel } from "@/components/ui/panel";
 import { requireAdmin } from "@/modules/auth/admin";
 import { getStoreSessionSummaries } from "@/modules/store/admin";
-import { revokeStationSessions } from "./actions";
+import { revokeStationSessions, rotateStationPinAction } from "./actions";
 export const dynamic = "force-dynamic";
 export default async function AdminPage() {
   await requireAdmin();
@@ -71,6 +71,18 @@ export default async function AdminPage() {
               </form>
             );
           })}
+          {!stations.length && <EmptyState>{ui.catalog.noStations}</EmptyState>}
+        </Panel>
+        <Panel title={ui.adminSessions.pinTitle}>
+          {stations.map((station) => (
+            <form action={rotateStationPinAction} key={station.id}>
+              <input type="hidden" name="stationId" value={station.id} />
+              <strong>{station.code} · {station.name}</strong>
+              <label>{ui.adminSessions.pin}<input name="pin" inputMode="numeric" pattern="[0-9]{4}" required /></label>
+              <label>{ui.adminSessions.pinConfirmation}<input name="pinConfirmation" inputMode="numeric" pattern="[0-9]{4}" required /></label>
+              <button type="submit">{ui.adminSessions.pinSubmit}</button>
+            </form>
+          ))}
           {!stations.length && <EmptyState>{ui.catalog.noStations}</EmptyState>}
         </Panel>
       </main>

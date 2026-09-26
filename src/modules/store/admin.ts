@@ -27,7 +27,7 @@ export async function getStoreSessionSummaries() {
   );
 }
 
-export async function revokeStoreSessions(stationId: string, adminId: string) {
+export async function revokeStoreSessions(stationId: string, adminId: string, reason = "admin_revocation") {
   const admin = createSupabaseAdminClient();
   const now = new Date().toISOString();
   const { data, error } = await admin
@@ -35,7 +35,7 @@ export async function revokeStoreSessions(stationId: string, adminId: string) {
     .update({
       revoked_at: now,
       revoked_by_admin_id: adminId,
-      revoked_reason: "admin_revocation",
+      revoked_reason: reason,
     })
     .eq("station_id", stationId)
     .is("revoked_at", null)
@@ -49,7 +49,16 @@ export async function revokeStoreSessions(stationId: string, adminId: string) {
       station_id: stationId,
       actor_type: "admin",
       actor_id: adminId,
-      data: { count: data.length, reason: "admin_revocation" },
+      data: { count: data.length, reason },
     });
   return data.length;
+}
+
+export async function rotateStationPin(stationId: string, adminId: string, pin: string) {
+  const admin = createSupabaseAdminClient();
+  const { error } = await admin.rpc("set_station_pin", { p_station_id: stationId, p_pin: pin });
+  if (error) throw error;
+  const revokedCount = await revokeStoreSessions(stationId, adminId, "pin_rotated");
+  await admin.from("events").insert({ type: "station_pin_rotated", station_id: stationId, actor_type: "admin", actor_id: adminId, data: { revoked_session_count: revokedCount } });
+  return revokedCount;
 }
