@@ -1,14 +1,17 @@
 import Link from "next/link";
 import { Footer, PilotShell } from "@/components/pilot-shell";
 import { ui } from "@/config/content";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function Home() {
   return (
     <PilotShell>
       <main className="landing">
-        <p className="eyebrow">{ui.home.eyebrow}</p>
-        <h1>{ui.home.title}</h1>
-        <p className="lead">{ui.home.lead}</p>
+        <PageHeader
+          eyebrow={ui.home.eyebrow}
+          title={ui.home.title}
+          intro={ui.home.lead}
+        />
         <div className="action-list">
           <Link href="/k/KA-7F4Q">{ui.home.participant}</Link>
           <Link href="/store/AMF">{ui.home.store}</Link>

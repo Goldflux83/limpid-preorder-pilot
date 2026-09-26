@@ -2,6 +2,9 @@ import Link from "next/link";
 import { Footer, PilotShell } from "@/components/pilot-shell";
 import { ui } from "@/config/content";
 import { getProducts, getStations } from "@/modules/catalog/server";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
+import { Panel } from "@/components/ui/panel";
 export default async function OrderPage({
   params,
 }: {
@@ -13,10 +16,8 @@ export default async function OrderPage({
   return (
     <PilotShell>
       <main className="page">
-        <p className="eyebrow">{ui.order.eyebrow}</p>
-        <h1>{ui.order.title}</h1>
-        <section>
-          <h2>{ui.order.station}</h2>
+        <PageHeader eyebrow={ui.order.eyebrow} title={ui.order.title} />
+        <Panel title={ui.order.station}>
           {stations.map((station) => (
             <div className="list-item" key={station.id}>
               <strong>{station.name}</strong>
@@ -26,10 +27,9 @@ export default async function OrderPage({
               </em>
             </div>
           ))}
-          {!stations.length && <p>{ui.catalog.noStations}</p>}
-        </section>
-        <section>
-          <h2>{ui.order.drink}</h2>
+          {!stations.length && <EmptyState>{ui.catalog.noStations}</EmptyState>}
+        </Panel>
+        <Panel title={ui.order.drink}>
           <div className="choice-row">
             {products.map((product) => (
               <button className="secondary" key={product.id}>
@@ -37,12 +37,11 @@ export default async function OrderPage({
               </button>
             ))}
           </div>
-          {!products.length && <p>{ui.catalog.noProducts}</p>}
-        </section>
-        <section>
-          <h2>{ui.order.slot}</h2>
+          {!products.length && <EmptyState>{ui.catalog.noProducts}</EmptyState>}
+        </Panel>
+        <Panel title={ui.order.slot}>
           <p>{ui.order.slotsUnavailable}</p>
-        </section>
+        </Panel>
         <Link href={`/k/${code}`} className="button-link secondary-link">
           {ui.order.back}
         </Link>

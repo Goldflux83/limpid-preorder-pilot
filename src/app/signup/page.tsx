@@ -1,6 +1,9 @@
 import { Footer, PilotShell } from "@/components/pilot-shell";
 import { ui } from "@/config/content";
 import { getStations } from "@/modules/catalog/server";
+import { EmptyState } from "@/components/ui/empty-state";
+import { FormField } from "@/components/ui/form-field";
+import { PageHeader } from "@/components/ui/page-header";
 export default async function SignupPage({
   searchParams,
 }: {
@@ -11,16 +14,12 @@ export default async function SignupPage({
   return (
     <PilotShell>
       <main className="page">
-        <p className="eyebrow">{ui.signup.eyebrow}</p>
-        <h1>{ui.signup.title}</h1>
-        <p>{ui.signup.intro}</p>
+        <PageHeader eyebrow={ui.signup.eyebrow} title={ui.signup.title} intro={ui.signup.intro} />
         <form className="form">
-          <label>
-            {ui.signup.email}
+          <FormField label={ui.signup.email}>
             <input name="email" type="email" required />
-          </label>
-          <label>
-            {ui.signup.station}
+          </FormField>
+          <FormField label={ui.signup.station}>
             <select name="station" defaultValue={s?.toUpperCase()}>
               {stations.map((station) => (
                 <option value={station.code} key={station.id}>
@@ -28,20 +27,18 @@ export default async function SignupPage({
                 </option>
               ))}
             </select>
-          </label>
-          {!stations.length && <p>{ui.catalog.noStations}</p>}
-          <label>
-            {ui.signup.frequency}
+          </FormField>
+          {!stations.length && <EmptyState>{ui.catalog.noStations}</EmptyState>}
+          <FormField label={ui.signup.frequency}>
             <select name="frequency">
               {ui.signup.frequencies.map((frequency) => (
                 <option key={frequency}>{frequency}</option>
               ))}
             </select>
-          </label>
-          <label>
-            {ui.signup.when}
+          </FormField>
+          <FormField label={ui.signup.when}>
             <textarea name="when" />
-          </label>
+          </FormField>
           <input
             className="honeypot"
             tabIndex={-1}
