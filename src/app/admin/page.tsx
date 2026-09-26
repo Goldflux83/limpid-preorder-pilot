@@ -7,12 +7,15 @@ import { Panel } from "@/components/ui/panel";
 import { requireAdmin } from "@/modules/auth/admin";
 import { getStoreSessionSummaries } from "@/modules/store/admin";
 import { revokeStationSessions, rotateStationPinAction } from "./actions";
+import { updateFeatureFlag } from "./actions";
+import { featureKeys, getFeatureFlags } from "@/modules/settings/features";
 export const dynamic = "force-dynamic";
 export default async function AdminPage() {
   await requireAdmin();
-  const [stations, sessionSummaries] = await Promise.all([
+  const [stations, sessionSummaries, features] = await Promise.all([
     getStations(),
     getStoreSessionSummaries(),
+    getFeatureFlags(),
   ]);
   return (
     <AdminPageTemplate>
@@ -83,6 +86,9 @@ export default async function AdminPage() {
             </form>
           ))}
           {!stations.length && <EmptyState>{ui.catalog.noStations}</EmptyState>}
+        </Panel>
+        <Panel title={ui.features.title}>
+          {featureKeys.map((key) => <form action={updateFeatureFlag} key={key} className="list-item"><input type="hidden" name="key" value={key} /><strong>{ui.features[key]}</strong><select name="enabled" defaultValue={String(features[key])}><option value="true">{ui.features.enabled}</option><option value="false">{ui.features.disabled}</option></select><button type="submit">{ui.features.save}</button></form>)}
         </Panel>
     </AdminPageTemplate>
   );

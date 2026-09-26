@@ -4,6 +4,7 @@ import { requireAdmin } from "@/modules/auth/admin";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { revokeStoreSessions, rotateStationPin } from "@/modules/store/admin";
 import { isValidStationPin } from "@/modules/store/policy";
+import { isFeatureKey, setFeatureFlag } from "@/modules/settings/features";
 
 export async function revokeStationSessions(formData: FormData) {
   const admin = await requireAdmin();
@@ -29,4 +30,14 @@ export async function rotateStationPinAction(formData: FormData) {
   if (!station) return;
   await rotateStationPin(stationId, admin.id, pin);
   revalidatePath("/admin");
+}
+
+export async function updateFeatureFlag(formData: FormData) {
+  const admin = await requireAdmin();
+  const key = String(formData.get("key"));
+  if (!isFeatureKey(key)) return;
+  await setFeatureFlag(key, formData.get("enabled") === "true", admin.id);
+  revalidatePath("/admin");
+  revalidatePath("/store");
+  revalidatePath("/participant");
 }

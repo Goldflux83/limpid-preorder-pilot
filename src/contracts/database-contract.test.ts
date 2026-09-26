@@ -51,4 +51,10 @@ describe("database security contracts", () => {
     expect(sql).toContain("store_station_id");
     expect(sql).toContain("alter publication supabase_realtime add table orders");
   });
+  it("keeps functional pilot flags in a protected database table", () => {
+    const sql = migration("202609260009_pilot_feature_flags.sql");
+    expect(sql).toContain("create table pilot_feature_flags");
+    expect(sql).toContain("alter table pilot_feature_flags enable row level security");
+    expect(sql).toContain("'ordering', false");
+  });
 });

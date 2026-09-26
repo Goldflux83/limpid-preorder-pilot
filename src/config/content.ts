@@ -61,6 +61,7 @@ export const content = {
     store: {
       connected: "Verbonden · zojuist bijgewerkt",
       polling: "Polling actief · elke 10 seconden bijgewerkt",
+      disabled: "Het winkelscherm is tijdelijk uitgeschakeld door technisch beheer.",
       empty: "Geen open bestellingen",
       emptyHint: "Nieuwe bestellingen verschijnen hier vanzelf.",
       pause: "Even geen bestellingen",
@@ -124,6 +125,17 @@ export const content = {
       pin: "Nieuwe viercijferige PIN",
       pinConfirmation: "Herhaal nieuwe PIN",
       pinSubmit: "Roteer PIN en trek sessies in",
+    },
+    features: {
+      title: "Pilotonderdelen",
+      enabled: "Aan",
+      disabled: "Uit",
+      save: "Opslaan",
+      ordering: "Voorbestellen",
+      store_screen: "Winkelscherm",
+      digital_stamps: "Digitale stempelkaart",
+      card_photos: "Kaartfoto’s",
+      email_delivery: "E-mailverzending",
     },
     adminLogin: {
       eyebrow: "Beheer",

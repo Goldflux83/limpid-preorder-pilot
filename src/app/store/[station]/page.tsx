@@ -10,6 +10,7 @@ import { dailyLogHref, isOrderOverdue } from "@/modules/store/policy";
 import { StoreAutoRefresh } from "@/components/store-auto-refresh";
 import { StorePauseCountdown } from "@/components/store-pause-countdown";
 import { getStoreRealtimeConfig } from "@/modules/store/realtime";
+import { getFeatureFlags } from "@/modules/settings/features";
 import {
   closeOrder,
   pauseOrders,
@@ -24,6 +25,7 @@ export default async function StorePage({
 }) {
   const { station: code } = await params;
   const session = await requireStoreSession(code);
+  const features = await getFeatureFlags();
   const stations = await getStations();
   const [orders, quickPause] = await Promise.all([
     getOpenStoreOrders(session.stationId),
@@ -42,6 +44,7 @@ export default async function StorePage({
       <div className="store-top">
         <p>{station?.name ?? code}</p>
       </div>
+      {!features.store_screen ? <div className="empty-ticket"><p>{ui.store.disabled}</p></div> : <>
       {orders.length ? (
         orders.map((order) => (
           <article
@@ -118,6 +121,7 @@ export default async function StorePage({
           {ui.store.log}
         </a>
       )}
+      </>}
     </StoreKioskTemplate>
   );
 }

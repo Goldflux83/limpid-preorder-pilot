@@ -5,17 +5,19 @@ import { getProducts, getStations } from "@/modules/catalog/server";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel } from "@/components/ui/panel";
+import { getFeatureFlags } from "@/modules/settings/features";
 export default async function OrderPage({
   params,
 }: {
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
-  const stations = await getStations();
+  const [stations, features] = await Promise.all([getStations(), getFeatureFlags()]);
   const products = await getProducts();
   return (
     <PublicPageTemplate>
         <PageHeader eyebrow={ui.order.eyebrow} title={ui.order.title} />
+        {!features.ordering ? <Panel title={ui.order.station}><p>{ui.order.slotsUnavailable}</p></Panel> : <>
         <Panel title={ui.order.station}>
           {stations.map((station) => (
             <div className="list-item" key={station.id}>
@@ -41,6 +43,7 @@ export default async function OrderPage({
         <Panel title={ui.order.slot}>
           <p>{ui.order.slotsUnavailable}</p>
         </Panel>
+        </>}
         <Link href={`/k/${code}`} className="button-link secondary-link">
           {ui.order.back}
         </Link>
