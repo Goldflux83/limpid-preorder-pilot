@@ -93,6 +93,14 @@ export const content = {
         "Exports & tokens",
       ],
     },
+    adminSessions: {
+      title: "iPad-sessies",
+      active: "Actieve sessies",
+      lastSeen: "Laatst actief",
+      none: "Geen actieve iPad-sessies.",
+      confirmation: "Typ de stationcode om alle iPad-sessies in te trekken.",
+      submit: "Trek alle iPad-sessies in",
+    },
     adminLogin: {
       eyebrow: "Beheer",
       title: "Inloggen",

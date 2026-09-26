@@ -31,7 +31,7 @@ export async function requireStoreSession(stationCode: string) {
   if (!token) redirect(`/store/${stationCode}/login`);
   const { data } = await createSupabaseAdminClient()
     .from("store_sessions")
-    .select("station_id, stations!inner(code)")
+    .select("id, station_id, stations!inner(code)")
     .eq("token_hash", tokenHash(token))
     .is("revoked_at", null)
     .gt("expires_at", new Date().toISOString())
@@ -42,5 +42,11 @@ export async function requireStoreSession(stationCode: string) {
       stationCode.toUpperCase()
   )
     redirect(`/store/${stationCode}/login`);
+  const touchBefore = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  await createSupabaseAdminClient()
+    .from("store_sessions")
+    .update({ last_seen_at: new Date().toISOString() })
+    .eq("id", data.id)
+    .lt("last_seen_at", touchBefore);
   return data.station_id;
 }
