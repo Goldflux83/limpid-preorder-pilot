@@ -1,12 +1,55 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
-export function StoreAutoRefresh({ soundEnabled, openOrderCount }: { soundEnabled: boolean; openOrderCount: number }) {
+import { createClient } from "@supabase/supabase-js";
+import { useEffect, useRef, useState } from "react";
+type RealtimeConfig = {
+  url: string;
+  anonKey: string;
+  token: string;
+  stationId: string;
+};
+export function StoreAutoRefresh({
+  soundEnabled,
+  openOrderCount,
+  realtime,
+  connectedLabel,
+  fallbackLabel,
+}: {
+  soundEnabled: boolean;
+  openOrderCount: number;
+  realtime: RealtimeConfig | null;
+  connectedLabel: string;
+  fallbackLabel: string;
+}) {
   const router = useRouter();
+  const [connected, setConnected] = useState(false);
   useEffect(() => {
     const timer = window.setInterval(() => router.refresh(), 10_000);
     return () => window.clearInterval(timer);
   }, [router]);
+  useEffect(() => {
+    if (!realtime) return;
+    const client = createClient(realtime.url, realtime.anonKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    client.realtime.setAuth(realtime.token);
+    const channel = client
+      .channel(`store-orders:${realtime.stationId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "orders",
+          filter: `station_id=eq.${realtime.stationId}`,
+        },
+        () => router.refresh()
+      )
+      .subscribe((status) => setConnected(status === "SUBSCRIBED"));
+    return () => {
+      void client.removeChannel(channel);
+    };
+  }, [realtime, router]);
   const previous = useRef(openOrderCount);
   useEffect(() => {
     if (soundEnabled && openOrderCount > previous.current) {
@@ -19,5 +62,11 @@ export function StoreAutoRefresh({ soundEnabled, openOrderCount }: { soundEnable
     }
     previous.current = openOrderCount;
   }, [openOrderCount, soundEnabled]);
-  return null;
+  const fallbackStyle = connected ? undefined : { color: "#b42318" };
+  return (
+    <span className="connection" style={fallbackStyle}>
+      <i style={connected ? undefined : { background: "#b42318" }} />{" "}
+      {connected ? connectedLabel : fallbackLabel}
+    </span>
+  );
 }

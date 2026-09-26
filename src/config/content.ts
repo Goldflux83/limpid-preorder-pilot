@@ -60,6 +60,7 @@ export const content = {
     },
     store: {
       connected: "Verbonden · zojuist bijgewerkt",
+      polling: "Polling actief · elke 10 seconden bijgewerkt",
       empty: "Geen open bestellingen",
       emptyHint: "Nieuwe bestellingen verschijnen hier vanzelf.",
       pause: "Even geen bestellingen",

@@ -45,4 +45,10 @@ describe("database security contracts", () => {
     expect(sql).toContain("revoke execute on function create_waitlist_signup");
     expect(sql).toContain("to service_role");
   });
+  it("limits realtime order updates to the JWT station claim", () => {
+    const sql = migration("202609260008_store_realtime.sql");
+    expect(sql).toContain("store_realtime_orders_read");
+    expect(sql).toContain("store_station_id");
+    expect(sql).toContain("alter publication supabase_realtime add table orders");
+  });
 });
