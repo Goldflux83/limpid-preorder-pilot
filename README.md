@@ -19,3 +19,5 @@ De demo werkt zonder secrets. Gebruik tijdens ontwikkeling en test een Goldflux-
 GitHub Actions verifieert pull requests en `main`. Een handmatig beschermde production-workflow accepteert alleen de eerder geteste commit-SHA. Configureer Vercel- en Supabase-secrets in GitHub Environments voordat deployments worden geactiveerd.
 
 Gebruik de moderne Supabase API-keys: `SUPABASE_PUBLISHABLE_KEY` voor browser/SSR en `SUPABASE_SECRET_KEY` uitsluitend op de server. `SUPABASE_URL` is de project-root (`https://<project-ref>.supabase.co`), niet `/rest/v1`. Realtime voor winkels vereist daarnaast een in Supabase geregistreerde RSA signing key; zet de bijbehorende `kid` en base64-gecodeerde PKCS#8 private key alleen in server-secrets.
+
+Optionele Goldflux operationele telemetry gebruikt uitsluitend `GOLDFLUX_TELEMETRY_ENDPOINT` en `GOLDFLUX_TELEMETRY_TOKEN` als server-secrets. Berichten bevatten alleen technische levenssignalen, actie-uitkomst, omgeving en release; geen pilot- of persoonsgegevens. Verzending is best-effort en blokkeert geen appflow.
