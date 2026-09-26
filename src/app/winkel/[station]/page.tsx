@@ -1,0 +1,3 @@
+import { PilotShell } from "@/components/pilot-shell";
+import { stations } from "@/lib/demo-data";
+export default async function StorePage({ params }: { params: Promise<{ station: string }> }) { const { station: code } = await params; const station = stations.find((s) => s.code === code.toUpperCase()); return <PilotShell><main className="store-screen"><div className="store-top"><p>{station?.name ?? code}</p><span className="connection"><i /> Verbonden · zojuist bijgewerkt</span></div><div className="empty-ticket"><h1>Geen open bestellingen</h1><p>Nieuwe bestellingen verschijnen hier vanzelf.</p></div><button className="pause-button">Even geen bestellingen</button><a className="log-link" href="#daglogboek">Dagelijks logboek openen</a></main></PilotShell>; }

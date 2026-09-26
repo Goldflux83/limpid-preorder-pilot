@@ -1,0 +1,2 @@
+import { Footer, PilotShell } from "@/components/pilot-shell";
+export default function PrivacyPage() { return <PilotShell><main className="page prose"><p className="eyebrow">Privacy</p><h1>Privacyverklaring pilot</h1><p>Deze pilot verwerkt een deelnemerscode en voornaam. De wachtlijst verwerkt daarnaast een e-mailadres voor de gevraagde beloningsbon. Er zijn geen betalingen, advertenties of externe analytics.</p><p>Gegevens staan in de EU en worden na de ingestelde bewaartermijn geanonimiseerd.</p></main><Footer /></PilotShell>; }

@@ -1,0 +1,16 @@
+name: Release production
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Previously verified commit SHA to release
+        required: true
+        type: string
+jobs:
+  release:
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: ${{ inputs.sha }} }
+      - run: echo "Deploy the verified SHA through the Vercel production workflow after VERCEL_* secrets are configured."
