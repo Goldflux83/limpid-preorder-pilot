@@ -64,6 +64,10 @@ export const content = {
       emptyHint: "Nieuwe bestellingen verschijnen hier vanzelf.",
       pause: "Even geen bestellingen",
       log: "Dagelijks logboek openen",
+      collected: "Klaar en afgehaald",
+      noShow: "Klaar, niet afgehaald",
+      orderNumber: "Bestelnummer",
+      due: "Tijdslot",
     },
     signup: {
       eyebrow: "Wachtlijst",

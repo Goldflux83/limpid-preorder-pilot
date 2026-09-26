@@ -13,3 +13,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Keep all user-visible copy, labels, messages, and accessible text in `src/config/content.ts`; route and UI components must reference that configuration and must not contain literal user-facing text.
 - Keep operational data (stations, products, opening hours, participant records, orders, and settings) in Supabase. SQL migrations and seed files define the initial database state; never duplicate that data in the frontend content configuration.
 - Keep developer-only infrastructure and secrets in environment variables. Do not put functional pilot settings in `NEXT_PUBLIC_*` variables.
+
+## Tests
+
+- Add or update automated tests for every behavior change, especially authorization, session, capacity, and state-transition rules.
+- Run `npm test`, `npm run lint`, and the relevant type/build checks before reporting implementation work complete.
