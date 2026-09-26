@@ -1,0 +1,3 @@
+import { Footer, PilotShell } from "@/components/pilot-shell";
+import { ui } from "@/config/content";
+export default function AdminPage() { return <PilotShell><main className="page"><p className="eyebrow">{ui.admin.eyebrow}</p><h1>{ui.admin.title}</h1><p>{ui.admin.intro}</p><div className="admin-grid">{ui.admin.sections.map((section) => <section key={section}><h2>{section}</h2><p>{ui.admin.ready}</p></section>)}</div><section><h2>{ui.admin.stations}</h2>{ui.stations.map((station) => <div className="list-item" key={station.code}><strong>{station.code} · {station.name}</strong><span>{station.openingHours}</span></div>)}</section></main><Footer /></PilotShell>; }

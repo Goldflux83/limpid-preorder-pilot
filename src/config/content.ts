@@ -1,0 +1,17 @@
+export const content = {
+  nl: {
+    navigation: { privacy: "Privacyverklaring", footer: "Pilot van Limpid & Co in opdracht van NS Retail" },
+    home: { eyebrow: "Limpid Preorder Pilot", title: "Koffie ophalen, zonder wachten.", lead: "Een besloten pilot voor deelnemers en kioskteams in Amersfoort en Gouda.", participant: "Open deelnemervoorbeeld", store: "Open winkelscherm", signup: "Open wachtlijst", admin: "Open beheer" },
+    participant: { eyebrow: "Persoonlijke pagina", greeting: "Hoi", card: "Strippenkaart", validUntil: "Geldig tot 27 november. Je fysieke kaart telt altijd.", today: "Vandaag", question: "Heb je vandaag koffie gehaald bij Kiosk?", yes: "Ja", no: "Nee", reset: "Eén keer per dag; een nieuwe dag start om 04:00.", redemption: "Koffie gehaald", remainingBefore: "Nog ongeveer", remainingBetween: "van", remainingAfter: "strippen. Indicatie, je kaart telt.", station: "Station", chooseStation: "Kies een station", register: "Registreer koffie", week: "Deze week", weekIntro: "De wekelijkse vragenlijst duurt ongeveer twee minuten.", weekLink: "Open vragenlijst", preorder: "Voorbestellen", noOpenOrder: "Je hebt nog geen open bestelling.", preorderLink: "Koffie voorbestellen", cardTitle: "Jouw kaart", cardHint: "Toon altijd je fysieke kaart bij de kassa.", stampLink: "Open digitale stempelkaart", qrAlt: "QR-code naar je persoonlijke pilotpagina", statuses: { active: "actief", paused: "gepauzeerd", blocked: "geblokkeerd" } },
+    order: { eyebrow: "Voorbestellen", title: "Bestel je koffie", station: "1. Station", drink: "2. Drank", slot: "3. Tijdslot", slotsUnavailable: "Slots worden zichtbaar zodra technisch beheer voorbestellen activeert.", back: "Terug naar jouw pagina", open: "Nu open", closed: "Tijdelijk gesloten" },
+    store: { connected: "Verbonden · zojuist bijgewerkt", empty: "Geen open bestellingen", emptyHint: "Nieuwe bestellingen verschijnen hier vanzelf.", pause: "Even geen bestellingen", log: "Dagelijks logboek openen" },
+    signup: { eyebrow: "Wachtlijst", title: "Wil je voorbestellen proberen?", intro: "Laat je gegevens achter en ontvang een eenmalige beloningsbon.", email: "E-mailadres", station: "Station", frequency: "Hoe vaak reis je?", when: "Wanneer had je willen voorbestellen?", consent: "Ik ga akkoord met de privacyverklaring.", submit: "Aanmelden", frequencies: ["Dagelijks", "Wekelijks", "Soms"] },
+    admin: { eyebrow: "Beheer", title: "Pilotbeheer", intro: "Beheeraccounts gebruiken Supabase Auth met tweestapsverificatie. Deze lokale startweergave toont de in te richten onderdelen.", ready: "Inrichten zodra beheerder is aangemeld.", stations: "Startstations", sections: ["Deelnemers", "Bestellingen", "Wachtlijst & bonnen", "Stations & producten", "Codes & QR-velden", "Exports & tokens"] },
+    privacy: { eyebrow: "Privacy", title: "Privacyverklaring pilot", body: "Deze pilot verwerkt een deelnemerscode en voornaam. De wachtlijst verwerkt daarnaast een e-mailadres voor de gevraagde beloningsbon. Er zijn geen betalingen, advertenties of externe analytics.", retention: "Gegevens staan in de EU en worden na de ingestelde bewaartermijn geanonimiseerd." },
+    stations: [{ code: "AMF", name: "Amersfoort", openingHours: "ma–vr 06:30–19:00", orderingOpen: false }, { code: "GD", name: "Gouda", openingHours: "ma–vr 06:30–18:30", orderingOpen: false }],
+    products: ["Cappuccino", "Caffè latte", "Americano", "Espresso", "Thee", "Warme chocolademelk"],
+  },
+  en: {} as Record<string, never>,
+} as const;
+
+export const ui = content.nl;
