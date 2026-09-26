@@ -10,7 +10,7 @@ export default function Home() {
         <h1>{ui.home.title}</h1>
         <p className="lead">{ui.home.lead}</p>
         <div className="action-list">
-          <Link href="/participant/KA-7F4Q">{ui.home.participant}</Link>
+          <Link href="/k/KA-7F4Q">{ui.home.participant}</Link>
           <Link href="/store/AMF">{ui.home.store}</Link>
           <Link href="/signup?s=AMF&p=poster">{ui.home.signup}</Link>
           <Link href="/admin">{ui.home.admin}</Link>
