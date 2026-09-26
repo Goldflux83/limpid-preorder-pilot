@@ -68,6 +68,11 @@ export const content = {
       noShow: "Klaar, niet afgehaald",
       orderNumber: "Bestelnummer",
       due: "Tijdslot",
+      resume: "Weer openen",
+      pauseUntil: "Pauze actief tot",
+      voucher: "Beloningsbon inwisselen",
+      voucherCode: "Boncode",
+      voucherSubmit: "Bon inwisselen",
     },
     signup: {
       eyebrow: "Wachtlijst",

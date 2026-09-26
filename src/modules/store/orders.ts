@@ -105,3 +105,26 @@ export async function pauseStoreSlots(stationId: string, sessionId: string) {
         data: { ends_at: until.toISOString() },
       });
 }
+
+export async function getActiveQuickPause(stationId: string) {
+  const { data } = await createSupabaseAdminClient().from("slot_closures").select("id,ends_at").eq("station_id", stationId).eq("reason", "quick_pause").is("opened_at", null).gt("ends_at", new Date().toISOString()).order("ends_at", { ascending: false }).limit(1).maybeSingle();
+  return data;
+}
+
+export async function resumeStoreSlots(stationId: string, sessionId: string) {
+  const now = new Date().toISOString();
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin.from("slot_closures").update({ opened_at: now }).eq("station_id", stationId).eq("reason", "quick_pause").is("opened_at", null).gt("ends_at", now).select("id");
+  if (error) throw error;
+  await admin.from("events").insert({ type: "store_pause_ended", station_id: stationId, actor_type: "store", actor_id: sessionId, data: { count: data.length } });
+  return data.length;
+}
+
+export async function redeemStoreVoucher(stationId: string, sessionId: string, code: string) {
+  const admin = createSupabaseAdminClient();
+  const now = new Date().toISOString();
+  const { data, error } = await admin.from("vouchers").update({ redeemed_at: now }).eq("code", code.trim().toUpperCase()).eq("station_id", stationId).is("redeemed_at", null).or(`valid_until.is.null,valid_until.gte.${now.slice(0, 10)}`).select("id").maybeSingle();
+  if (error || !data) return false;
+  await admin.from("events").insert({ type: "voucher_redeemed", station_id: stationId, voucher_id: data.id, actor_type: "store", actor_id: sessionId });
+  return true;
+}

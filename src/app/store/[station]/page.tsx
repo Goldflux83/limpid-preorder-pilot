@@ -2,9 +2,11 @@ import { PilotShell } from "@/components/pilot-shell";
 import { ui } from "@/config/content";
 import { getStations } from "@/modules/catalog/server";
 import { requireStoreSession } from "@/modules/store/session";
-import { getOpenStoreOrders } from "@/modules/store/orders";
+import { getActiveQuickPause, getOpenStoreOrders } from "@/modules/store/orders";
+import { dailyLogHref, isOrderOverdue } from "@/modules/store/policy";
 import { StoreAutoRefresh } from "@/components/store-auto-refresh";
-import { closeOrder, pauseOrders } from "./actions";
+import { StorePauseCountdown } from "@/components/store-pause-countdown";
+import { closeOrder, pauseOrders, redeemVoucher, resumeOrders } from "./actions";
 export const dynamic = "force-dynamic";
 export default async function StorePage({
   params,
@@ -14,12 +16,12 @@ export default async function StorePage({
   const { station: code } = await params;
   const session = await requireStoreSession(code);
   const stations = await getStations();
-  const orders = await getOpenStoreOrders(session.stationId);
+  const [orders, quickPause] = await Promise.all([getOpenStoreOrders(session.stationId), getActiveQuickPause(session.stationId)]);
   const station = stations.find((item) => item.code === code.toUpperCase());
   return (
     <PilotShell>
       <main className="store-screen">
-        <StoreAutoRefresh />
+        <StoreAutoRefresh soundEnabled={station?.sound_enabled ?? false} openOrderCount={orders.length} />
         <div className="store-top">
           <p>{station?.name ?? code}</p>
           <span className="connection">
@@ -28,7 +30,7 @@ export default async function StorePage({
         </div>
         {orders.length ? (
           orders.map((order) => (
-            <article className="empty-ticket" key={order.id}>
+            <article className="empty-ticket" style={isOrderOverdue(order.slot_start) ? { borderColor: "#f79009", background: "#fff7ed" } : undefined} key={order.id}>
               <h1>{order.participant?.first_name}</h1>
               <p>
                 {order.product?.name} · {order.number}
@@ -63,12 +65,19 @@ export default async function StorePage({
             <p>{ui.store.emptyHint}</p>
           </div>
         )}
-        <form action={pauseOrders}>
+        {quickPause ? (
+          <form action={resumeOrders}>
+            <input type="hidden" name="station" value={code} />
+            <StorePauseCountdown endsAt={quickPause.ends_at} label={ui.store.pauseUntil} />
+            <button className="pause-button" type="submit">{ui.store.resume}</button>
+          </form>
+        ) : <form action={pauseOrders}><input type="hidden" name="station" value={code} /><button className="pause-button" type="submit">{ui.store.pause}</button></form>}
+        <form action={redeemVoucher}>
           <input type="hidden" name="station" value={code} />
-          <button className="pause-button" type="submit">
-            {ui.store.pause}
-          </button>
+          <label>{ui.store.voucherCode}<input name="voucherCode" required /></label>
+          <button type="submit">{ui.store.voucherSubmit}</button>
         </form>
+        {station?.daily_log_url && <a className="log-link" href={dailyLogHref(station.daily_log_url, station.code)}>{ui.store.log}</a>}
       </main>
     </PilotShell>
   );
