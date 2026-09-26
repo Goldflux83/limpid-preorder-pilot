@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
 type RealtimeConfig = {
   url: string;
-  anonKey: string;
+  publishableKey: string;
   token: string;
   stationId: string;
 };
@@ -29,7 +29,7 @@ export function StoreAutoRefresh({
   }, [router]);
   useEffect(() => {
     if (!realtime) return;
-    const client = createClient(realtime.url, realtime.anonKey, {
+    const client = createClient(realtime.url, realtime.publishableKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
     client.realtime.setAuth(realtime.token);

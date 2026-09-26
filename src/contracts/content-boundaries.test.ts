@@ -13,7 +13,7 @@ describe("content and configuration boundaries", () => {
   });
   it("does not expose functional flags through NEXT_PUBLIC variables", () => {
     expect(source("src/lib/theme.ts")).not.toMatch(/NEXT_PUBLIC_FEATURE/);
-    expect(source("src/modules/catalog/server.ts")).toContain("SUPABASE_SERVICE_ROLE_KEY");
+    expect(source("src/modules/catalog/server.ts")).toContain("SUPABASE_SECRET_KEY");
   });
   it("keeps the legacy participant URL while operational routes are English", () => {
     expect(source("next.config.ts")).toContain('"/k/:code"');

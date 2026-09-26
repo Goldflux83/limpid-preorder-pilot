@@ -1,8 +1,10 @@
+import { normalizeSupabaseUrl } from "@/lib/supabase/server";
 export type Station = { id: string; code: string; name: string; ordering_enabled: boolean; sound_enabled: boolean; daily_log_url: string | null; opening_hours: Record<string, { open: string; close: string }> };
 export type Product = { id: string; name: string };
 
-const baseUrl = process.env.SUPABASE_URL;
-const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const configuredUrl = process.env.SUPABASE_URL;
+const baseUrl = configuredUrl && normalizeSupabaseUrl(configuredUrl);
+const serviceKey = process.env.SUPABASE_SECRET_KEY;
 
 async function query<T>(path: string): Promise<T[]> {
   if (!baseUrl || !serviceKey) return [];

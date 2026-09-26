@@ -2,9 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
+export function normalizeSupabaseUrl(value: string) {
+  return value.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
+}
+
 function config() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_ANON_KEY;
+  const configuredUrl = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY;
+  const url = configuredUrl && normalizeSupabaseUrl(configuredUrl);
   if (!url || !key) throw new Error("Supabase is not configured");
   return { url, key };
 }
@@ -24,8 +29,9 @@ export async function createSupabaseServerClient() {
 }
 
 export function createSupabaseAdminClient() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const configuredUrl = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY;
+  const url = configuredUrl && normalizeSupabaseUrl(configuredUrl);
   if (!url || !key) throw new Error("Supabase service role is not configured");
   return createClient(url, key, {
     auth: { autoRefreshToken: false, persistSession: false },
