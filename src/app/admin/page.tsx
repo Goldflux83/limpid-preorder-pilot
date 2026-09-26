@@ -4,7 +4,10 @@ import { getStations } from "@/modules/catalog/server";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel } from "@/components/ui/panel";
+import { requireAdmin } from "@/modules/auth/admin";
+export const dynamic = "force-dynamic";
 export default async function AdminPage() {
+  await requireAdmin();
   const stations = await getStations();
   return (
     <PilotShell>

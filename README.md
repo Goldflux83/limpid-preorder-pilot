@@ -1,8 +1,8 @@
 # Limpid Preorder Pilot
 
-Mobiel-eerste pilot voor kaartgebruik, koffie vooruitbestellen en wachtlijstinschrijvingen. De app is voorbereid op Vercel Frankfurt en Supabase EU Central.
+Mobile-first webapp for pilot preorder drinks and signup waiting list with Next.js on Vercel Frankfurt and Supabase EU Central.
 
-## Lokaal starten
+## To start
 
 1. Kopieer `.env.example` naar `.env.local`.
 2. Installeer afhankelijkheden met `npm install`.

@@ -93,6 +93,24 @@ export const content = {
         "Exports & tokens",
       ],
     },
+    adminLogin: {
+      eyebrow: "Beheer",
+      title: "Inloggen",
+      email: "E-mailadres",
+      password: "Wachtwoord",
+      submit: "Inloggen",
+    },
+    adminMfa: {
+      eyebrow: "Beheer",
+      title: "Tweestapsverificatie",
+      code: "Code uit authenticator-app",
+      submit: "Verifiëren",
+    },
+    storeLogin: {
+      eyebrow: "Winkel",
+      pin: "Viercijferige PIN",
+      submit: "Open winkelscherm",
+    },
     privacy: {
       eyebrow: "Privacy",
       title: "Privacyverklaring pilot",
