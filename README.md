@@ -8,7 +8,7 @@ Mobile-first webapp for pilot preorder drinks and signup waiting list with Next.
 2. Installeer afhankelijkheden met `npm install`.
 3. Start met `npm run dev`.
 
-De demo werkt zonder secrets. Voor productie wordt de migratie in `supabase/migrations` op een afzonderlijk test- en productieproject toegepast; `supabase/seed.sql` geeft AMF/GD en voorbeeldproducten een herhaalbare startpositie.
+De demo werkt zonder secrets. Gebruik tijdens ontwikkeling en test een Goldflux-Supabaseproject; maak pas na klantakkoord een afzonderlijk Limpid-productieproject in Frankfurt. Voer op ieder project dezelfde migraties en seed uit, maar zet geen wachtlijstdata tussen projecten over. `supabase/seed.sql` geeft AMF/GD en voorbeeldproducten een herhaalbare startpositie.
 
 ## Privacy en toegang
 

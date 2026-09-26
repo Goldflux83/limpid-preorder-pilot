@@ -4,17 +4,20 @@ import { getStations } from "@/modules/catalog/server";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FormField } from "@/components/ui/form-field";
 import { PageHeader } from "@/components/ui/page-header";
+import { submitSignup } from "./actions";
 export default async function SignupPage({
   searchParams,
 }: {
-  searchParams: Promise<{ s?: string }>;
+  searchParams: Promise<{ s?: string; p?: string; status?: "duplicate" | "invalid" | "rate_limited" }>;
 }) {
-  const { s } = await searchParams;
+  const { s, p, status } = await searchParams;
   const stations = await getStations();
   return (
     <PublicPageTemplate>
         <PageHeader eyebrow={ui.signup.eyebrow} title={ui.signup.title} intro={ui.signup.intro} />
-        <form className="form">
+        <form className="form" action={submitSignup}>
+          {status && <p className="hint">{ui.signup.messages[status]}</p>}
+          <input type="hidden" name="poster" value={p ?? ""} />
           <FormField label={ui.signup.email}>
             <input name="email" type="email" required />
           </FormField>
@@ -38,6 +41,12 @@ export default async function SignupPage({
           <FormField label={ui.signup.when}>
             <textarea name="when" />
           </FormField>
+          <FormField label={ui.signup.price}>
+            <select name="price">{ui.signup.priceOptions.map((option) => <option key={option}>{option}</option>)}</select>
+          </FormField>
+          <FormField label={ui.signup.priceOther}><input name="priceOther" /></FormField>
+          <fieldset><legend>{ui.signup.formats}</legend>{ui.signup.formatOptions.map((option) => <label className="check" key={option}><input type="checkbox" name="formats" value={option} /> {option}</label>)}</fieldset>
+          <fieldset><legend>{ui.signup.trial}</legend><label className="check"><input type="radio" name="wantsToJoin" value="yes" required /> {ui.signup.yes}</label><label className="check"><input type="radio" name="wantsToJoin" value="no" required /> {ui.signup.no}</label></fieldset>
           <input
             className="honeypot"
             tabIndex={-1}
@@ -45,7 +54,7 @@ export default async function SignupPage({
             name="company"
           />
           <label className="check">
-            <input type="checkbox" required /> {ui.signup.consent}
+            <input type="checkbox" name="consent" value="yes" required /> {ui.signup.consent}
           </label>
           <button type="submit">{ui.signup.submit}</button>
         </form>

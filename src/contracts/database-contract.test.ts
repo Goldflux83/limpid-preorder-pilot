@@ -31,4 +31,18 @@ describe("database security contracts", () => {
     expect(migration("202609260006_store_operations.sql")).toContain("sound_enabled boolean not null default false");
     expect(migration("202609260006_store_operations.sql")).toContain("daily_log_url text");
   });
+  it("makes a waitlist email unique after normalization and issues vouchers server-side", () => {
+    const sql = migration("202609260007_waitlist_signup.sql");
+    expect(sql).toContain("waitlist_entries_email_normalized_unique");
+    expect(sql).toContain("lower(trim(email))");
+    expect(sql).toContain("create_waitlist_signup");
+    expect(sql).toContain("insert into vouchers");
+    expect(sql).toContain("exception when unique_violation");
+  });
+  it("keeps the waitlist RPC and rate-limit storage unavailable to browser roles", () => {
+    const sql = migration("202609260007_waitlist_signup.sql");
+    expect(sql).toContain("alter table waitlist_attempts enable row level security");
+    expect(sql).toContain("revoke execute on function create_waitlist_signup");
+    expect(sql).toContain("to service_role");
+  });
 });
