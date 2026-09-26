@@ -16,7 +16,30 @@ De demo werkt zonder secrets. Gebruik tijdens ontwikkeling en test een Goldflux-
 
 ## Deployment
 
-GitHub Actions verifieert pull requests en `main`. Een handmatig beschermde production-workflow accepteert alleen de eerder geteste commit-SHA. Configureer Vercel- en Supabase-secrets in GitHub Environments voordat deployments worden geactiveerd.
+GitHub Actions verifieert pull requests en `main`. Pas daarna wordt dezelfde SHA naar Vercel `tst` gedeployed. De handmatige, door GitHub Environment `prd` beschermde workflow promoot uitsluitend die bestaande Vercel-deployment; productie wordt niet opnieuw gebouwd.
+
+Vercel project bevat twee EU/Frankfurt-omgevingen:
+- Vercel Preview als `tst`, gekoppeld aan de Goldflux testdatabase, en
+- Vercel Production (`prd`), gekoppeld aan een afzonderlijke Goldflux productiedatabase.
+
+Configureer deze app-variabelen rechtstreeks in beide Vercel-omgevingen:
+
+```dotenv
+NEXT_PUBLIC_APP_URL=
+SUPABASE_URL=
+SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SECRET_KEY=
+SUPABASE_JWT_SIGNING_KEY_ID=
+SUPABASE_JWT_SIGNING_PRIVATE_KEY=
+STORE_RATE_LIMIT_SALT=
+WAITLIST_RATE_LIMIT_SALT=
+GOLDFLUX_TELEMETRY_ENDPOINT=
+GOLDFLUX_TELEMETRY_TOKEN=
+```
+
+`RESEND_API_KEY` en `EMAIL_FROM` blijven afwezig totdat e-mail is goedgekeurd. Configureer in de GitHub Environments `tst` en `prd` uitsluitend `VERCEL_TOKEN`, `VERCEL_ORG_ID` en `VERCEL_PROJECT_ID`; Supabase- en appsecrets horen niet in GitHub. SQL-migraties worden bewust niet door een Vercel-deployment uitgevoerd: pas ze gecontroleerd toe op `tst` en na review op `prd`.
+
+Gebruik daarvoor de handmatige workflow **Apply database migrations**. Voeg in GitHub Environment `tst` en `prd` elk een eigen `SUPABASE_DB_URL` secret toe: gebruik de Session Pooler-connection string uit Supabase Connect, inclusief wachtwoord. Kies `tst` en typ `APPLY_TST` voor de testdatabase, of kies `prd` en typ `APPLY_PRD`; de `prd`-environment houdt de bestaande GitHub approval aan. De workflow voert eerst alle migrations uit en daarna de idempotente `supabase/seed.sql`.
 
 Gebruik de moderne Supabase API-keys: `SUPABASE_PUBLISHABLE_KEY` voor browser/SSR en `SUPABASE_SECRET_KEY` uitsluitend op de server. `SUPABASE_URL` is de project-root (`https://<project-ref>.supabase.co`), niet `/rest/v1`. Realtime voor winkels vereist daarnaast een in Supabase geregistreerde RSA signing key; zet de bijbehorende `kid` en base64-gecodeerde PKCS#8 private key alleen in server-secrets.
 

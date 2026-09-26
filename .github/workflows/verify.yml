@@ -3,6 +3,12 @@ on:
   pull_request:
   push:
     branches: [main]
+permissions:
+  contents: read
+  deployments: write
+concurrency:
+  group: tst-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -15,3 +21,26 @@ jobs:
       - run: npm run lint
       - run: npx tsc --noEmit
       - run: npm run build
+  deploy-tst:
+    name: Deploy verified build to tst
+    needs: verify
+    environment: tst
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel Preview
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          deployment_url="$(npx vercel@latest deploy --yes --token "$VERCEL_TOKEN")"
+          echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
+      - name: Register release candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          deployment_id="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" -f ref="$GITHUB_SHA" -f environment=tst -F transient_environment=true -F production_environment=false --jq .id)"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" -f state=success -f environment_url="$DEPLOYMENT_URL" -f log_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"

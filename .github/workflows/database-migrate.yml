@@ -1,0 +1,46 @@
+name: Apply database migrations
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Database environment to update
+        required: true
+        type: choice
+        options:
+          - tst
+          - prd
+      confirmation:
+        description: Type APPLY_TST or APPLY_PRD to confirm
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: database-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Apply ${{ inputs.target }} schema and seed
+    environment: ${{ inputs.target }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm target
+        env:
+          TARGET: ${{ inputs.target }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          expected="APPLY_${TARGET^^}"
+          test "$CONFIRMATION" = "$expected"
+      - name: Apply migrations
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: npx supabase@2.118.0 db push --db-url "$SUPABASE_DB_URL" --include-all
+      - name: Apply idempotent seed
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: npx supabase@2.118.0 db query --db-url "$SUPABASE_DB_URL" --file supabase/seed.sql

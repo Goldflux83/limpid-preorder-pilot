@@ -1,0 +1,37 @@
+name: Promote production
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Previously verified commit SHA to promote
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  deployments: read
+
+jobs:
+  promote:
+    name: Promote verified deployment
+    environment: prd
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find successful test deployment
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ inputs.sha }}
+        run: |
+          deployment_id="$(gh api "repos/${GITHUB_REPOSITORY}/deployments?sha=${SHA}&environment=tst&per_page=100" --jq '[.[] | select(.environment == "tst")][0].id')"
+          test -n "$deployment_id" && test "$deployment_id" != "null"
+          deployment_url="$(gh api "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" --jq '[.[] | select(.state == "success" and .environment_url != null)][0].environment_url')"
+          test -n "$deployment_url" && test "$deployment_url" != "null"
+          echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
+      - name: Promote existing Vercel deployment
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: npx vercel@latest promote "${{ steps.candidate.outputs.url }}" --yes --token "$VERCEL_TOKEN"
