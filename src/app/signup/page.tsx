@@ -1,4 +1,4 @@
-import { Footer, PilotShell } from "@/components/pilot-shell";
+import { PublicPageTemplate } from "@/components/templates/page-template";
 import { ui } from "@/config/content";
 import { getStations } from "@/modules/catalog/server";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -12,8 +12,7 @@ export default async function SignupPage({
   const { s } = await searchParams;
   const stations = await getStations();
   return (
-    <PilotShell>
-      <main className="page">
+    <PublicPageTemplate>
         <PageHeader eyebrow={ui.signup.eyebrow} title={ui.signup.title} intro={ui.signup.intro} />
         <form className="form">
           <FormField label={ui.signup.email}>
@@ -50,8 +49,6 @@ export default async function SignupPage({
           </label>
           <button type="submit">{ui.signup.submit}</button>
         </form>
-      </main>
-      <Footer />
-    </PilotShell>
+    </PublicPageTemplate>
   );
 }

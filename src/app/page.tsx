@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { Footer, PilotShell } from "@/components/pilot-shell";
+import { PublicPageTemplate } from "@/components/templates/page-template";
 import { ui } from "@/config/content";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default function Home() {
   return (
-    <PilotShell>
-      <main className="landing">
+    <PublicPageTemplate className="landing">
         <PageHeader
           eyebrow={ui.home.eyebrow}
           title={ui.home.title}
@@ -18,8 +17,6 @@ export default function Home() {
           <Link href="/signup?s=AMF&p=poster">{ui.home.signup}</Link>
           <Link href="/admin">{ui.home.admin}</Link>
         </div>
-      </main>
-      <Footer />
-    </PilotShell>
+    </PublicPageTemplate>
   );
 }

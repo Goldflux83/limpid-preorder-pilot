@@ -1,4 +1,4 @@
-import { Footer, PilotShell } from "@/components/pilot-shell";
+import { PublicPageTemplate } from "@/components/templates/page-template";
 import { ui } from "@/config/content";
 import { demoParticipant } from "@/config/demo";
 import { QrCode } from "@/components/qr-code";
@@ -19,8 +19,7 @@ export default async function ParticipantPage({
   const stations = await getStations();
   const remaining = participant.maxRedemptions - participant.redemptions;
   return (
-    <PilotShell>
-      <main className="page">
+    <PublicPageTemplate>
         <PageHeader
           eyebrow={ui.participant.eyebrow}
           title={`${ui.participant.greeting} ${participant.firstName}`}
@@ -60,8 +59,6 @@ export default async function ParticipantPage({
           <p className="participant-code">{participant.code}</p>
           <QrCode value={`/k/${participant.code}`} alt={ui.participant.qrAlt} />
         </Panel>
-      </main>
-      <Footer />
-    </PilotShell>
+    </PublicPageTemplate>
   );
 }

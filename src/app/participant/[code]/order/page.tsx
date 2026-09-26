@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Footer, PilotShell } from "@/components/pilot-shell";
+import { PublicPageTemplate } from "@/components/templates/page-template";
 import { ui } from "@/config/content";
 import { getProducts, getStations } from "@/modules/catalog/server";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -14,8 +14,7 @@ export default async function OrderPage({
   const stations = await getStations();
   const products = await getProducts();
   return (
-    <PilotShell>
-      <main className="page">
+    <PublicPageTemplate>
         <PageHeader eyebrow={ui.order.eyebrow} title={ui.order.title} />
         <Panel title={ui.order.station}>
           {stations.map((station) => (
@@ -45,8 +44,6 @@ export default async function OrderPage({
         <Link href={`/k/${code}`} className="button-link secondary-link">
           {ui.order.back}
         </Link>
-      </main>
-      <Footer />
-    </PilotShell>
+    </PublicPageTemplate>
   );
 }

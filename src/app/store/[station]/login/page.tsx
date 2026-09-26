@@ -1,5 +1,6 @@
 import { openSession } from "./actions";
 import { ui } from "@/config/content";
+import { AuthPageTemplate } from "@/components/templates/page-template";
 export default async function StoreLoginPage({
   params,
 }: {
@@ -7,7 +8,7 @@ export default async function StoreLoginPage({
 }) {
   const { station } = await params;
   return (
-    <main className="page">
+    <AuthPageTemplate>
       <p className="eyebrow">{ui.storeLogin.eyebrow}</p>
       <h1>{station.toUpperCase()}</h1>
       <form action={openSession}>
@@ -18,6 +19,6 @@ export default async function StoreLoginPage({
         </label>
         <button type="submit">{ui.storeLogin.submit}</button>
       </form>
-    </main>
+    </AuthPageTemplate>
   );
 }

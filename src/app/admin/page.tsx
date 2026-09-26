@@ -1,4 +1,4 @@
-import { Footer, PilotShell } from "@/components/pilot-shell";
+import { AdminPageTemplate } from "@/components/templates/page-template";
 import { ui } from "@/config/content";
 import { getStations } from "@/modules/catalog/server";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -15,8 +15,7 @@ export default async function AdminPage() {
     getStoreSessionSummaries(),
   ]);
   return (
-    <PilotShell>
-      <main className="page">
+    <AdminPageTemplate>
         <PageHeader
           eyebrow={ui.admin.eyebrow}
           title={ui.admin.title}
@@ -85,8 +84,6 @@ export default async function AdminPage() {
           ))}
           {!stations.length && <EmptyState>{ui.catalog.noStations}</EmptyState>}
         </Panel>
-      </main>
-      <Footer />
-    </PilotShell>
+    </AdminPageTemplate>
   );
 }

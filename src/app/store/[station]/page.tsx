@@ -1,4 +1,4 @@
-import { PilotShell } from "@/components/pilot-shell";
+import { StoreKioskTemplate } from "@/components/templates/store-kiosk-template";
 import { ui } from "@/config/content";
 import { getStations } from "@/modules/catalog/server";
 import { requireStoreSession } from "@/modules/store/session";
@@ -19,8 +19,7 @@ export default async function StorePage({
   const [orders, quickPause] = await Promise.all([getOpenStoreOrders(session.stationId), getActiveQuickPause(session.stationId)]);
   const station = stations.find((item) => item.code === code.toUpperCase());
   return (
-    <PilotShell>
-      <main className="store-screen">
+    <StoreKioskTemplate>
         <StoreAutoRefresh soundEnabled={station?.sound_enabled ?? false} openOrderCount={orders.length} />
         <div className="store-top">
           <p>{station?.name ?? code}</p>
@@ -78,7 +77,6 @@ export default async function StorePage({
           <button type="submit">{ui.store.voucherSubmit}</button>
         </form>
         {station?.daily_log_url && <a className="log-link" href={dailyLogHref(station.daily_log_url, station.code)}>{ui.store.log}</a>}
-      </main>
-    </PilotShell>
+    </StoreKioskTemplate>
   );
 }
