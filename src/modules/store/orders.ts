@@ -1,4 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { isOrderOverdue } from "./policy";
 
 export type StoreOrder = {
   id: string;
@@ -9,30 +10,42 @@ export type StoreOrder = {
   participant: { first_name: string } | null;
 };
 
-export async function getOpenStoreOrders(stationId: string) {
+export async function markOverdueOrdersUnknown(stationId?: string) {
   const admin = createSupabaseAdminClient();
   const cutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-  const { data: stale } = await admin
+  let query = admin
     .from("orders")
     .select("id")
-    .eq("station_id", stationId)
     .eq("status", "received")
     .lt("slot_start", cutoff);
+  if (stationId) query = query.eq("station_id", stationId);
+  const { data: stale } = await query;
+  let updated = 0;
   for (const order of stale ?? []) {
-    await admin
+    const { data } = await admin
       .from("orders")
       .update({ status: "unknown", closed_at: new Date().toISOString() })
       .eq("id", order.id)
-      .eq("status", "received");
+      .eq("status", "received")
+      .select("id,station_id")
+      .maybeSingle();
+    if (!data) continue;
     await admin
       .from("events")
       .insert({
         type: "order_marked_unknown",
-        station_id: stationId,
+        station_id: data.station_id,
         order_id: order.id,
         actor_type: "system",
       });
+    updated += 1;
   }
+  return updated;
+}
+
+export async function getOpenStoreOrders(stationId: string, sessionId: string) {
+  const admin = createSupabaseAdminClient();
+  await markOverdueOrdersUnknown(stationId);
   const { data } = await admin
     .from("orders")
     .select(
@@ -41,7 +54,7 @@ export async function getOpenStoreOrders(stationId: string) {
     .eq("station_id", stationId)
     .eq("status", "received")
     .order("slot_start");
-  return (data ?? []).map((order) => ({
+  const orders = (data ?? []).map((order) => ({
     ...order,
     product: Array.isArray(order.product)
       ? order.product[0] ?? null
@@ -50,6 +63,11 @@ export async function getOpenStoreOrders(stationId: string) {
       ? order.participant[0] ?? null
       : order.participant,
   })) as StoreOrder[];
+  for (const order of orders) {
+    const { data: displayed } = await admin.from("orders").update({ displayed_at: new Date().toISOString() }).eq("id", order.id).is("displayed_at", null).select("id").maybeSingle();
+    if (displayed) await admin.from("events").insert({ type: "order_displayed", station_id: stationId, order_id: order.id, actor_type: "store", actor_id: sessionId });
+  }
+  return orders;
 }
 
 export async function closeStoreOrder(
@@ -60,6 +78,8 @@ export async function closeStoreOrder(
 ) {
   const admin = createSupabaseAdminClient();
   const now = new Date().toISOString();
+  const { data: openOrder } = await admin.from("orders").select("slot_start").eq("id", orderId).eq("station_id", stationId).eq("status", "received").maybeSingle();
+  if (!openOrder || (status === "not_collected" && !isOrderOverdue(openOrder.slot_start))) return "too_early" as const;
   const { data, error } = await admin
     .from("orders")
     .update({ status, closed_at: now })
@@ -68,7 +88,7 @@ export async function closeStoreOrder(
     .eq("status", "received")
     .select("id")
     .maybeSingle();
-  if (error || !data) return false;
+  if (error || !data) return "unavailable" as const;
   await admin
     .from("events")
     .insert({
@@ -78,7 +98,7 @@ export async function closeStoreOrder(
       actor_type: "store",
       actor_id: sessionId,
     });
-  return true;
+  return "closed" as const;
 }
 
 export async function pauseStoreSlots(stationId: string, sessionId: string) {

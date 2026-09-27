@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { closeStoreOrder, pauseStoreSlots, redeemStoreVoucher, resumeStoreSlots } from "@/modules/store/orders";
 import { requireStoreSession } from "@/modules/store/session";
 import { isFeatureEnabled } from "@/modules/settings/features";
@@ -11,10 +12,12 @@ export async function closeOrder(formData: FormData) {
   const order = String(formData.get("order"));
   const status = String(formData.get("status"));
   const session = await requireStoreSession(station);
-  if (status === "collected" || status === "not_collected")
-    await closeStoreOrder(session.stationId, session.sessionId, order, status);
-  void reportOperationalTelemetry({ type: "server_action", action: "store_order_closed", outcome: "success" });
+  const result = status === "collected" || status === "not_collected"
+    ? await closeStoreOrder(session.stationId, session.sessionId, order, status)
+    : "unavailable";
+  void reportOperationalTelemetry({ type: "server_action", action: "store_order_closed", outcome: result === "closed" ? "success" : "rejected" });
   revalidatePath(`/store/${station}`);
+  redirect(`/store/${station}${result === "too_early" ? "?status=no-show-too-early" : ""}`);
 }
 export async function pauseOrders(formData: FormData) {
   if (!(await isFeatureEnabled("store_screen"))) return;

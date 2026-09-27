@@ -126,6 +126,7 @@ export const content = {
       voucher: "Beloningsbon inwisselen",
       voucherCode: "Boncode",
       voucherSubmit: "Bon inwisselen",
+      noShowTooEarly: "Een bestelling kan pas tien minuten na het tijdslot als niet afgehaald worden gesloten.",
     },
     signup: {
       eyebrow: "Wachtlijst",

@@ -20,15 +20,18 @@ import {
 export const dynamic = "force-dynamic";
 export default async function StorePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ station: string }>;
+  searchParams: Promise<{ status?: string }>;
 }) {
   const { station: code } = await params;
+  const { status } = await searchParams;
   const session = await requireStoreSession(code);
   const features = await getFeatureFlags();
   const stations = await getStations();
   const [orders, quickPause] = await Promise.all([
-    getOpenStoreOrders(session.stationId),
+    getOpenStoreOrders(session.stationId, session.sessionId),
     getActiveQuickPause(session.stationId),
   ]);
   const station = stations.find((item) => item.code === code.toUpperCase());
@@ -45,6 +48,7 @@ export default async function StorePage({
         <p>{station?.name ?? code}</p>
       </div>
       {!features.store_screen ? <div className="empty-ticket"><p>{ui.store.disabled}</p></div> : <>
+      {status === "no-show-too-early" && <p className="hint">{ui.store.noShowTooEarly}</p>}
       {orders.length ? (
         orders.map((order) => (
           <article
@@ -74,7 +78,7 @@ export default async function StorePage({
               <button name="status" value="collected">
                 {ui.store.collected}
               </button>
-              <button className="secondary" name="status" value="not_collected">
+              <button className="secondary" name="status" value="not_collected" disabled={!isOrderOverdue(order.slot_start)}>
                 {ui.store.noShow}
               </button>
             </form>
