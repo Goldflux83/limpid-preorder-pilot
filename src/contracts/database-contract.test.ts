@@ -89,4 +89,13 @@ describe("database security contracts", () => {
     expect(sql).toContain("events_append_only");
     expect(sql).toContain("to service_role");
   });
+  it("keeps participant extensions server-only and tied to immutable participant IDs", () => {
+    const sql = migration("202609270013_participant_extensions.sql");
+    expect(sql).toContain("weekly_question_statuses");
+    expect(sql).toContain("card_photos");
+    expect(sql).toContain("record_digital_stamp");
+    expect(sql).toContain("convert_waitlist_entry");
+    expect(sql).toContain("to service_role");
+    expect(sql).toContain("storage.buckets");
+  });
 });
