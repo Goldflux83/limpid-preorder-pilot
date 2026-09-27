@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { PublicPageTemplate } from "@/components/templates/page-template";
 import { ui } from "@/config/content";
 import { QrCode } from "@/components/qr-code";
@@ -11,6 +12,8 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Panel } from "@/components/ui/panel";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { registerRedemption } from "./actions";
+import { isFeatureEnabled } from "@/modules/settings/features";
+import { getLatestParticipantOrder } from "@/modules/orders/server";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +28,12 @@ export default async function ParticipantPage({
   const code = normalizeParticipantCode(rawCode);
   const participant = await getActiveParticipantByCode(code);
   if (!participant) notFound();
-  const [{ status }, stations, redemptionCount] = await Promise.all([
+  const [{ status }, stations, redemptionCount, orderingEnabled, latestOrder] = await Promise.all([
     searchParams,
     getStations(),
     getParticipantRedemptionCount(participant.id),
+    isFeatureEnabled("ordering"),
+    getLatestParticipantOrder(participant.id),
   ]);
   const remaining = Math.max(0, 10 - redemptionCount);
   return (
@@ -61,6 +66,10 @@ export default async function ParticipantPage({
           <button type="submit" disabled={!stations.length}>{ui.participant.register}</button>
         </form>
       </Panel>
+      {orderingEnabled && participant.can_preorder && <Panel title={ui.participant.preorder}>
+        {latestOrder?.status === "received" && <p>{latestOrder.number}</p>}
+        <Link className="button-link" href={`/k/${code}/order`}>{ui.participant.preorderLink}</Link>
+      </Panel>}
       <Panel title={ui.participant.cardTitle}>
         <p className="participant-code">{code}</p>
         <QrCode value={`/k/${code}`} alt={ui.participant.qrAlt} />

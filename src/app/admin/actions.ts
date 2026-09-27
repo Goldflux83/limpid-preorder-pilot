@@ -7,7 +7,7 @@ import { isValidStationPin } from "@/modules/store/policy";
 import { isManageableFeatureKey, setFeatureFlag } from "@/modules/settings/features";
 import { reportOperationalTelemetry } from "@/modules/telemetry/operational";
 import { isExportDataset } from "@/modules/admin/policy";
-import { createExportToken, createParticipant, createProduct, revokeExportToken, rotateParticipantCode, updateParticipant, updateProduct } from "@/modules/admin/server";
+import { anonymizePilotPersonalData, createExportToken, createParticipant, createProduct, revokeExportToken, rotateParticipantCode, setRetentionUntil, updateParticipant, updateProduct } from "@/modules/admin/server";
 
 const optional = (value: FormDataEntryValue | null) => {
   const text = String(value ?? "").trim();
@@ -127,5 +127,19 @@ export async function revokeExportTokenAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   if (!id) return;
   await revokeExportToken(id, admin.id);
+  revalidatePath("/admin");
+}
+
+export async function setRetentionUntilAction(formData: FormData) {
+  const admin = await requireAdmin();
+  await setRetentionUntil(String(formData.get("retentionUntil") ?? ""), admin.id);
+  revalidatePath("/admin");
+}
+
+export async function anonymizePilotPersonalDataAction(formData: FormData) {
+  const admin = await requireAdmin();
+  if (String(formData.get("confirmation") ?? "") !== "ANONIMISEREN") return;
+  const anonymized = await anonymizePilotPersonalData(admin.id);
+  void reportOperationalTelemetry({ type: "server_action", action: "personal_data_anonymized", outcome: anonymized ? "success" : "rejected" });
   revalidatePath("/admin");
 }

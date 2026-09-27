@@ -8,9 +8,9 @@ import { requireAdmin } from "@/modules/auth/admin";
 import { getStoreSessionSummaries } from "@/modules/store/admin";
 import { getFeatureFlags, manageableFeatureKeys } from "@/modules/settings/features";
 import { exportDatasets } from "@/modules/admin/policy";
-import { getAdminParticipants, getAdminProducts, getExportTokens } from "@/modules/admin/server";
+import { getAdminParticipants, getAdminProducts, getExportTokens, getRetentionSettings } from "@/modules/admin/server";
 import { ExportTokenForm } from "./export-token-form";
-import { createParticipantAction, createProductAction, revokeExportTokenAction, revokeStationSessions, rotateParticipantCodeAction, rotateStationPinAction, updateFeatureFlag, updateParticipantAction, updateProductAction } from "./actions";
+import { anonymizePilotPersonalDataAction, createParticipantAction, createProductAction, revokeExportTokenAction, revokeStationSessions, rotateParticipantCodeAction, rotateStationPinAction, setRetentionUntilAction, updateFeatureFlag, updateParticipantAction, updateProductAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,7 @@ function StationOptions({ stations, value }: { stations: Awaited<ReturnType<type
 
 export default async function AdminPage() {
   await requireAdmin();
-  const [stations, sessionSummaries, features, participants, products, tokens] = await Promise.all([getStations(), getStoreSessionSummaries(), getFeatureFlags(), getAdminParticipants(), getAdminProducts(), getExportTokens()]);
+  const [stations, sessionSummaries, features, participants, products, tokens, retentionUntil] = await Promise.all([getStations(), getStoreSessionSummaries(), getFeatureFlags(), getAdminParticipants(), getAdminProducts(), getExportTokens(), getRetentionSettings()]);
   return <AdminPageTemplate>
     <PageHeader eyebrow={ui.admin.eyebrow} title={ui.admin.title} intro={ui.admin.intro} />
     <Panel title={ui.adminManagement.participants}>
@@ -36,6 +36,11 @@ export default async function AdminPage() {
       {!products.length && <EmptyState>{ui.adminManagement.noProducts}</EmptyState>}
     </Panel>
     <Panel title={ui.adminManagement.exports}><ExportTokenForm datasets={exportDatasets} />{tokens.map((token) => <form action={revokeExportTokenAction} key={token.id} className="list-item"><input type="hidden" name="id" value={token.id} /><span>{token.table_name}</span><span>{token.active ? ui.adminManagement.active : ""}</span>{token.active && <button type="submit">{ui.adminManagement.revoke}</button>}</form>)}{!tokens.length && <EmptyState>{ui.adminManagement.noTokens}</EmptyState>}</Panel>
+    <Panel title={ui.adminManagement.privacy}>
+      <form action={setRetentionUntilAction}><label>{ui.adminManagement.retentionUntil}<input type="date" name="retentionUntil" defaultValue={retentionUntil} required /></label><button type="submit">{ui.adminManagement.save}</button></form>
+      <p className="hint">{ui.adminManagement.anonymizeWarning}</p>
+      <form action={anonymizePilotPersonalDataAction}><label>{ui.adminManagement.anonymizeConfirmation}<input name="confirmation" autoComplete="off" required /></label><button type="submit">{ui.adminManagement.anonymize}</button></form>
+    </Panel>
     <Panel title={ui.admin.stations}>{stations.map((station) => <div className="list-item" key={station.id}><strong>{station.code} · {station.name}</strong></div>)}{!stations.length && <EmptyState>{ui.catalog.noStations}</EmptyState>}</Panel>
     <Panel title={ui.adminSessions.title}>{stations.map((station) => { const summary = sessionSummaries[station.id]; return <form action={revokeStationSessions} key={station.id}><input type="hidden" name="stationId" value={station.id} /><div className="list-item"><strong>{station.code} · {station.name}</strong><span>{ui.adminSessions.active}: {summary?.activeCount ?? 0}</span><span>{ui.adminSessions.lastSeen}: {summary?.lastSeenAt ? new Intl.DateTimeFormat("nl-NL", { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Amsterdam" }).format(new Date(summary.lastSeenAt)) : ui.adminSessions.none}</span></div><label>{ui.adminSessions.confirmation}<input name="confirmation" autoComplete="off" /></label><button type="submit">{ui.adminSessions.submit}</button></form>; })}</Panel>
     <Panel title={ui.adminSessions.pinTitle}>{stations.map((station) => <form action={rotateStationPinAction} key={station.id}><input type="hidden" name="stationId" value={station.id} /><strong>{station.code} · {station.name}</strong><label>{ui.adminSessions.pin}<input name="pin" inputMode="numeric" pattern="[0-9]{4}" required /></label><label>{ui.adminSessions.pinConfirmation}<input name="pinConfirmation" inputMode="numeric" pattern="[0-9]{4}" required /></label><button type="submit">{ui.adminSessions.pinSubmit}</button></form>)}</Panel>

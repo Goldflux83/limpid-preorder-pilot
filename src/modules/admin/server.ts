@@ -100,3 +100,21 @@ export async function getExportTokens() {
   const { data } = await createSupabaseAdminClient().from("export_tokens").select("id,table_name,active,created_at").order("created_at", { ascending: false });
   return data ?? [];
 }
+
+export async function getRetentionSettings() {
+  const { data } = await createSupabaseAdminClient().from("pilot_retention_settings").select("personal_data_retention_until").eq("singleton", true).maybeSingle();
+  return data?.personal_data_retention_until ?? "2027-03-31";
+}
+
+export async function setRetentionUntil(value: string, adminId: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const { error } = await createSupabaseAdminClient().from("pilot_retention_settings").update({ personal_data_retention_until: value, updated_at: new Date().toISOString() }).eq("singleton", true);
+  if (error) return false;
+  await createSupabaseAdminClient().from("events").insert({ type: "personal_data_retention_updated", actor_type: "admin", actor_id: adminId, data: { retention_until: value } });
+  return true;
+}
+
+export async function anonymizePilotPersonalData(adminId: string) {
+  const { data, error } = await createSupabaseAdminClient().rpc("anonymize_pilot_personal_data", { p_admin_id: adminId });
+  return !error && Boolean(data);
+}

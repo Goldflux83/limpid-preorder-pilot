@@ -73,4 +73,20 @@ describe("database security contracts", () => {
     expect(sql).toContain("participant_code_rotated");
     expect(sql).toContain("to service_role");
   });
+  it("keeps slot claims, cancellation and anonymization in protected database functions", () => {
+    const sql = migration("202609270012_ordering_and_anonymization.sql");
+    expect(sql).toContain("ordering is disabled");
+    expect(sql).toContain("slot is outside opening hours");
+    expect(sql).toContain("daily order limit reached");
+    expect(sql).toContain("product is unavailable");
+    expect(sql).toContain("pg_advisory_xact_lock");
+    expect(sql).toContain("cancel_participant_order");
+    expect(sql).toContain("anonymize_pilot_personal_data");
+    expect(sql).toContain("first_name = null");
+    expect(sql).toContain("email = null");
+    expect(sql).toContain("personal_data_anonymized");
+    expect(sql).toContain("retention period has not ended");
+    expect(sql).toContain("events_append_only");
+    expect(sql).toContain("to service_role");
+  });
 });
