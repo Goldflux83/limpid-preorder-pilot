@@ -47,3 +47,7 @@ export function slotState(slot: string, maxPerSlot: number, orderCount: number, 
 export function orderFailure(message: string | undefined): OrderFailure {
   return message === "slot is full" || message === "slot is closed" ? "slot_unavailable" : "unavailable";
 }
+
+export function validOrderFeedback(smiley: number, answer: string) {
+  return Number.isInteger(smiley) && smiley >= 1 && smiley <= 5 && answer.trim().length <= 1000;
+}

@@ -13,7 +13,7 @@ import { buildAvailableSlots } from "@/modules/orders/policy";
 import { getLatestParticipantOrder, getSlotStates } from "@/modules/orders/server";
 import { normalizeParticipantCode } from "@/modules/participants/policy";
 import { getActiveParticipantByCode } from "@/modules/participants/server";
-import { cancelOrder, placeOrder } from "./actions";
+import { cancelOrder, placeOrder, recordOrderFeedback } from "./actions";
 import { OrderAutoRefresh } from "@/components/order-auto-refresh";
 
 function localSlot(value: string) {
@@ -41,9 +41,11 @@ export default async function ParticipantOrderPage({ params, searchParams }: { p
     {latestOrder && <Panel title={ui.order.confirmation}>
       {latestOrder.status === "received" && <OrderAutoRefresh />}
       <p><strong>{ui.store.orderNumber}: {latestOrder.number}</strong></p>
-      <p>{latestOrder.product?.name} · {localSlot(latestOrder.slot_start)}</p>
+      <p>{stations.find((item) => item.id === latestOrder.station_id)?.name} · {latestOrder.product?.name} · {localSlot(latestOrder.slot_start)}</p>
       <p>{ui.order.status}: <StatusBadge>{ui.order.statuses[latestOrder.status]}</StatusBadge></p>
+      <p className="muted">{ui.order.pickupInstructions}</p>
       {latestOrder.status === "received" && <form action={cancelOrder}><input type="hidden" name="code" value={code} /><input type="hidden" name="orderId" value={latestOrder.id} /><button type="submit">{ui.order.cancel}</button></form>}
+      {latestOrder.status === "collected" && latestOrder.smiley === null && <form action={recordOrderFeedback}><input type="hidden" name="code" value={code} /><input type="hidden" name="orderId" value={latestOrder.id} /><FormField label={ui.order.smiley}><select name="smiley" defaultValue="" required><option value="" disabled>{ui.order.smiley}</option>{[1, 2, 3, 4, 5].map((value) => <option key={value} value={value}>{value}</option>)}</select></FormField><FormField label={ui.order.feedbackQuestion}><textarea name="openAnswer" /></FormField><button type="submit">{ui.order.feedbackSubmit}</button></form>}
     </Panel>}
     {status === "unavailable" && <p className="hint">{ui.order.unavailable}</p>}
     {status === "slot-unavailable" && <Panel title={ui.order.alternatives}>
@@ -51,6 +53,7 @@ export default async function ParticipantOrderPage({ params, searchParams }: { p
       {alternatives.length ? <div className="choice-row">{alternatives.map((slot) => <Link className="secondary-link" key={slot} href={`/k/${code}/order?${new URLSearchParams({ station: station?.id ?? "", product: product?.id ?? "", slot }).toString()}`}>{ui.order.chooseAlternative.replace("{slot}", localSlot(slot))}</Link>)}</div> : <EmptyState>{ui.order.noAlternatives}</EmptyState>}
     </Panel>}
     {status === "cancel-unavailable" && <p className="hint">{ui.order.cancelUnavailable}</p>}
+    {status === "feedback-recorded" && <p className="hint">{ui.order.feedbackSaved}</p>}
     <Panel title={ui.order.station}>
       <form action={`/k/${code}/order`}>
         <FormField label={ui.participant.station}><select name="station" defaultValue={station?.id ?? ""} onChange={undefined}><option value="">{ui.participant.chooseStation}</option>{stations.filter((item) => item.ordering_enabled).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></FormField>

@@ -82,6 +82,13 @@ describe("database security contracts", () => {
     expect(sql).toContain("actor_type, actor_id");
     expect(sql).toContain("to service_role");
   });
+
+  it("accepts pickup feedback only once for the participant's collected order", () => {
+    const sql = migration("202609270016_order_feedback.sql");
+    expect(sql).toContain("participant_id = p_participant_id");
+    expect(sql).toContain("status = 'collected'");
+    expect(sql).toContain("smiley is null");
+  });
   it("rotates participant codes atomically and only through the service role", () => {
     const sql = migration("202609270011_atomic_participant_code_rotation.sql");
     expect(sql).toContain("for update");

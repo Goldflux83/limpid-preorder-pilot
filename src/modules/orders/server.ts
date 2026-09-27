@@ -2,14 +2,14 @@ import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { orderFailure, slotState, type OrderFailure, type SlotState } from "./policy";
 
 export type ParticipantOrder = {
-  id: string; number: string; station_id: string; product_id: string; slot_start: string; status: "received" | "collected" | "not_collected" | "cancelled" | "unknown";
+  id: string; number: string; station_id: string; product_id: string; slot_start: string; status: "received" | "collected" | "not_collected" | "cancelled" | "unknown"; smiley: number | null;
   product: { name: string } | null;
 };
 
 export async function getLatestParticipantOrder(participantId: string) {
   const { data } = await createSupabaseAdminClient()
     .from("orders")
-    .select("id,number,station_id,product_id,slot_start,status,product:products(name)")
+    .select("id,number,station_id,product_id,slot_start,status,smiley,product:products(name)")
     .eq("participant_id", participantId)
     .order("received_at", { ascending: false })
     .limit(1)
@@ -32,6 +32,18 @@ export async function createParticipantOrder(input: { participantId: string; sta
 
 export async function cancelParticipantOrder(participantId: string, orderId: string) {
   const { data, error } = await createSupabaseAdminClient().rpc("cancel_participant_order", { p_participant_id: participantId, p_order_id: orderId });
+  return !error && data === true;
+}
+
+export async function recordParticipantOrderFeedback(participantId: string, orderId: string, smiley: number, answer: string) {
+  const { validOrderFeedback } = await import("./policy");
+  if (!validOrderFeedback(smiley, answer)) return false;
+  const { data, error } = await createSupabaseAdminClient().rpc("record_order_feedback", {
+    p_participant_id: participantId,
+    p_order_id: orderId,
+    p_smiley: smiley,
+    p_open_answer: answer.trim() || null,
+  });
   return !error && data === true;
 }
 

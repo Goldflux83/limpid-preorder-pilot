@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildAvailableSlots, isSlotWithinOpeningHours, orderFailure, validOrderOption } from "./policy";
+import { buildAvailableSlots, isSlotWithinOpeningHours, orderFailure, validOrderFeedback, validOrderOption } from "./policy";
 
 const station = {
   id: "station", code: "AMF", name: "Amersfoort", ordering_enabled: true, sound_enabled: false, daily_log_url: null,
@@ -26,5 +26,10 @@ describe("order slot policy", () => {
     expect(orderFailure("slot is full")).toBe("slot_unavailable");
     expect(orderFailure("slot is closed")).toBe("slot_unavailable");
     expect(orderFailure("participant cannot preorder")).toBe("unavailable");
+  });
+  it("accepts one bounded pickup feedback response", () => {
+    expect(validOrderFeedback(5, "Alles stond klaar.")).toBe(true);
+    expect(validOrderFeedback(0, "")).toBe(false);
+    expect(validOrderFeedback(3, "x".repeat(1001))).toBe(false);
   });
 });
