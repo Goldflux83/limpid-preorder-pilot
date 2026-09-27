@@ -115,6 +115,42 @@ export async function setRetentionUntil(value: string, adminId: string) {
 }
 
 export async function anonymizePilotPersonalData(adminId: string) {
-  const { data, error } = await createSupabaseAdminClient().rpc("anonymize_pilot_personal_data", { p_admin_id: adminId });
+  const admin = createSupabaseAdminClient();
+  const retentionUntil = await getRetentionSettings();
+  if (new Date(`${retentionUntil}T23:59:59.999Z`).getTime() > Date.now()) return false;
+  const { data: photos } = await admin.from("card_photos").select("id,object_path");
+  if (photos?.length) {
+    const { error: storageError } = await admin.storage.from("card-photos").remove(photos.map((photo) => photo.object_path));
+    if (storageError) return false;
+    const { error: recordError } = await admin.from("card_photos").delete().in("id", photos.map((photo) => photo.id));
+    if (recordError) return false;
+  }
+  const { data, error } = await admin.rpc("anonymize_pilot_personal_data", { p_admin_id: adminId });
   return !error && Boolean(data);
+}
+
+export type AdminWaitlistEntry = { id: string; email: string | null; station_id: string | null; poster: string | null; travel_frequency: string | null; wants_to_join: boolean; created_at: string };
+
+export async function getAdminWaitlistEntries() {
+  const { data } = await createSupabaseAdminClient().from("waitlist_entries").select("id,email,station_id,poster,travel_frequency,wants_to_join,created_at").is("converted_participant_id", null).order("created_at", { ascending: false });
+  return (data ?? []) as AdminWaitlistEntry[];
+}
+
+export async function convertWaitlistEntry(input: { waitlistId: string; firstName: string; cohort: string; variant: string; canPreorder: boolean; adminId: string }) {
+  const { data, error } = await createSupabaseAdminClient().rpc("convert_waitlist_entry", {
+    p_waitlist_id: input.waitlistId, p_first_name: input.firstName.trim(), p_cohort: input.cohort.trim(), p_variant: input.variant.trim(),
+    p_can_preorder: input.canPreorder, p_code: generateParticipantCode(), p_admin_id: input.adminId,
+  });
+  return !error && Boolean(data);
+}
+
+export async function setWeeklyQuestionUrl(value: string, adminId: string) {
+  const weeklyQuestionUrl = value.trim() || null;
+  if (weeklyQuestionUrl) {
+    try { new URL(weeklyQuestionUrl); } catch { return false; }
+  }
+  const { error } = await createSupabaseAdminClient().from("pilot_integrations").update({ weekly_question_url: weeklyQuestionUrl, updated_at: new Date().toISOString() }).eq("singleton", true);
+  if (error) return false;
+  await createSupabaseAdminClient().from("events").insert({ type: "weekly_question_url_updated", actor_type: "admin", actor_id: adminId });
+  return true;
 }

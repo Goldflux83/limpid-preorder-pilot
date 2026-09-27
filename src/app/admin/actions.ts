@@ -7,7 +7,7 @@ import { isValidStationPin } from "@/modules/store/policy";
 import { isManageableFeatureKey, setFeatureFlag } from "@/modules/settings/features";
 import { reportOperationalTelemetry } from "@/modules/telemetry/operational";
 import { isExportDataset } from "@/modules/admin/policy";
-import { anonymizePilotPersonalData, createExportToken, createParticipant, createProduct, revokeExportToken, rotateParticipantCode, setRetentionUntil, updateParticipant, updateProduct } from "@/modules/admin/server";
+import { anonymizePilotPersonalData, convertWaitlistEntry, createExportToken, createParticipant, createProduct, revokeExportToken, rotateParticipantCode, setRetentionUntil, setWeeklyQuestionUrl, updateParticipant, updateProduct } from "@/modules/admin/server";
 
 const optional = (value: FormDataEntryValue | null) => {
   const text = String(value ?? "").trim();
@@ -142,4 +142,22 @@ export async function anonymizePilotPersonalDataAction(formData: FormData) {
   const anonymized = await anonymizePilotPersonalData(admin.id);
   void reportOperationalTelemetry({ type: "server_action", action: "personal_data_anonymized", outcome: anonymized ? "success" : "rejected" });
   revalidatePath("/admin");
+}
+
+export async function convertWaitlistEntryAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const waitlistId = String(formData.get("waitlistId") ?? "");
+  const firstName = String(formData.get("firstName") ?? "");
+  const cohort = String(formData.get("cohort") ?? "");
+  const variant = String(formData.get("variant") ?? "");
+  if (!waitlistId || !firstName.trim() || !cohort.trim() || !variant.trim()) return;
+  await convertWaitlistEntry({ waitlistId, firstName, cohort, variant, canPreorder: formData.get("canPreorder") === "on", adminId: admin.id });
+  revalidatePath("/admin");
+}
+
+export async function setWeeklyQuestionUrlAction(formData: FormData) {
+  const admin = await requireAdmin();
+  await setWeeklyQuestionUrl(String(formData.get("weeklyQuestionUrl") ?? ""), admin.id);
+  revalidatePath("/admin");
+  revalidatePath("/k");
 }
