@@ -1,5 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
-import { slotState, type SlotState } from "./policy";
+import { orderFailure, slotState, type OrderFailure, type SlotState } from "./policy";
 
 export type ParticipantOrder = {
   id: string; number: string; station_id: string; product_id: string; slot_start: string; status: "received" | "collected" | "not_collected" | "cancelled" | "unknown";
@@ -26,8 +26,8 @@ export async function createParticipantOrder(input: { participantId: string; sta
     p_options: input.option ? { selection: input.option } : {},
     p_slot_start: input.slotStart,
   });
-  if (error || !data || typeof data !== "object" || !("id" in data)) return null;
-  return { id: String(data.id) };
+  if (error || !data || typeof data !== "object" || !("id" in data)) return { outcome: orderFailure(error?.message) } as { outcome: OrderFailure };
+  return { outcome: "created" as const, id: String(data.id) };
 }
 
 export async function cancelParticipantOrder(participantId: string, orderId: string) {

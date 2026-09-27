@@ -22,9 +22,9 @@ function localSlot(value: string) {
 
 export const dynamic = "force-dynamic";
 
-export default async function ParticipantOrderPage({ params, searchParams }: { params: Promise<{ code: string }>; searchParams: Promise<{ station?: string; product?: string; status?: string }> }) {
+export default async function ParticipantOrderPage({ params, searchParams }: { params: Promise<{ code: string }>; searchParams: Promise<{ station?: string; product?: string; slot?: string; status?: string }> }) {
   const { code: rawCode } = await params;
-  const { station: selectedStationId, product: selectedProductId, status } = await searchParams;
+  const { station: selectedStationId, product: selectedProductId, slot: selectedSlot, status } = await searchParams;
   const code = normalizeParticipantCode(rawCode);
   const participant = await getActiveParticipantByCode(code);
   if (!participant) notFound();
@@ -35,6 +35,7 @@ export default async function ParticipantOrderPage({ params, searchParams }: { p
   const slots = station ? buildAvailableSlots(station) : [];
   const product = products.find((item) => item.id === selectedProductId) ?? null;
   const slotStates = station ? await getSlotStates(station.id, slots, station.max_per_slot) : {};
+  const alternatives = slots.filter((slot) => slotStates[slot] === "available").slice(0, 3);
   return <PublicPageTemplate>
     <PageHeader eyebrow={ui.order.eyebrow} title={ui.order.title} />
     {latestOrder && <Panel title={ui.order.confirmation}>
@@ -45,6 +46,10 @@ export default async function ParticipantOrderPage({ params, searchParams }: { p
       {latestOrder.status === "received" && <form action={cancelOrder}><input type="hidden" name="code" value={code} /><input type="hidden" name="orderId" value={latestOrder.id} /><button type="submit">{ui.order.cancel}</button></form>}
     </Panel>}
     {status === "unavailable" && <p className="hint">{ui.order.unavailable}</p>}
+    {status === "slot-unavailable" && <Panel title={ui.order.alternatives}>
+      <p className="hint">{ui.order.slotUnavailable}</p>
+      {alternatives.length ? <div className="choice-row">{alternatives.map((slot) => <Link className="secondary-link" key={slot} href={`/k/${code}/order?${new URLSearchParams({ station: station?.id ?? "", product: product?.id ?? "", slot }).toString()}`}>{ui.order.chooseAlternative.replace("{slot}", localSlot(slot))}</Link>)}</div> : <EmptyState>{ui.order.noAlternatives}</EmptyState>}
+    </Panel>}
     {status === "cancel-unavailable" && <p className="hint">{ui.order.cancelUnavailable}</p>}
     <Panel title={ui.order.station}>
       <form action={`/k/${code}/order`}>
@@ -64,7 +69,7 @@ export default async function ParticipantOrderPage({ params, searchParams }: { p
         <input type="hidden" name="stationId" value={station.id} />
         <input type="hidden" name="productId" value={product.id} />
         <FormField label={ui.order.option}><select name="option" defaultValue=""><option value="">{ui.order.noOption}</option>{product.options.map((option) => <option key={option} value={option}>{option}</option>)}</select></FormField>
-        <FormField label={ui.order.chooseSlot}><select name="slotStart" required defaultValue=""><option value="" disabled>{ui.order.chooseSlot}</option>{slots.map((slot) => <option key={slot} value={slot} disabled={slotStates[slot] !== "available"}>{localSlot(slot)} · {slotStates[slot] === "full" ? ui.order.slotFull : slotStates[slot] === "closed" ? ui.order.closed : ui.order.slotAvailable}</option>)}</select></FormField>
+        <FormField label={ui.order.chooseSlot}><select name="slotStart" required defaultValue={slotStates[selectedSlot ?? ""] === "available" ? selectedSlot : ""}><option value="" disabled>{ui.order.chooseSlot}</option>{slots.map((slot) => <option key={slot} value={slot} disabled={slotStates[slot] !== "available"}>{localSlot(slot)} · {slotStates[slot] === "full" ? ui.order.slotFull : slotStates[slot] === "closed" ? ui.order.closed : ui.order.slotAvailable}</option>)}</select></FormField>
         {!products.length && <EmptyState>{ui.order.noProducts}</EmptyState>}
         {!slots.length && <EmptyState>{ui.order.noSlots}</EmptyState>}
         <button type="submit" disabled={!slots.some((slot) => slotStates[slot] === "available") || latestOrder?.status === "received"}>{ui.order.submit}</button>

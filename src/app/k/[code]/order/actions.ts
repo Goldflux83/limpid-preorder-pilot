@@ -17,8 +17,13 @@ export async function placeOrder(formData: FormData) {
     option: String(formData.get("option") ?? ""),
     slotStart: String(formData.get("slotStart") ?? ""),
   });
-  void reportOperationalTelemetry({ type: "server_action", action: "participant_order_created", outcome: order ? "success" : "rejected" });
-  redirect(`/k/${code}/order${order ? "?status=created" : "?status=unavailable"}`);
+  void reportOperationalTelemetry({ type: "server_action", action: "participant_order_created", outcome: order.outcome === "created" ? "success" : "rejected" });
+  const query = new URLSearchParams({
+    station: String(formData.get("stationId") ?? ""),
+    product: String(formData.get("productId") ?? ""),
+    status: order.outcome === "created" ? "created" : order.outcome === "slot_unavailable" ? "slot-unavailable" : "unavailable",
+  });
+  redirect(`/k/${code}/order?${query.toString()}`);
 }
 
 export async function cancelOrder(formData: FormData) {

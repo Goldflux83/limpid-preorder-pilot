@@ -36,9 +36,14 @@ export function validOrderOption(value: string, productOptions: string[]) {
 }
 
 export type SlotState = "available" | "full" | "closed";
+export type OrderFailure = "slot_unavailable" | "unavailable";
 
 export function slotState(slot: string, maxPerSlot: number, orderCount: number, closures: { starts_at: string; ends_at: string; opened_at: string | null }[]) : SlotState {
   const time = new Date(slot).getTime();
   if (closures.some((closure) => !closure.opened_at && time >= new Date(closure.starts_at).getTime() && time < new Date(closure.ends_at).getTime())) return "closed";
   return orderCount >= maxPerSlot ? "full" : "available";
+}
+
+export function orderFailure(message: string | undefined): OrderFailure {
+  return message === "slot is full" || message === "slot is closed" ? "slot_unavailable" : "unavailable";
 }
