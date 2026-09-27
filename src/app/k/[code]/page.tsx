@@ -12,8 +12,11 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Panel } from "@/components/ui/panel";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { registerRedemption } from "./actions";
-import { isFeatureEnabled } from "@/modules/settings/features";
+import { getFeatureFlags } from "@/modules/settings/features";
 import { getLatestParticipantOrder } from "@/modules/orders/server";
+import { currentIsoWeek } from "@/modules/participant_extensions/policy";
+import { getWeeklyQuestionStatus, getWeeklyQuestionUrl } from "@/modules/participant_extensions/server";
+import { participantPageUrl } from "@/lib/app_url";
 
 export const dynamic = "force-dynamic";
 
@@ -28,12 +31,15 @@ export default async function ParticipantPage({
   const code = normalizeParticipantCode(rawCode);
   const participant = await getActiveParticipantByCode(code);
   if (!participant) notFound();
-  const [{ status }, stations, redemptionCount, orderingEnabled, latestOrder] = await Promise.all([
+  const week = currentIsoWeek();
+  const [{ status }, stations, redemptionCount, features, latestOrder, weeklyQuestionUrl, weeklyQuestionComplete] = await Promise.all([
     searchParams,
     getStations(),
     getParticipantRedemptionCount(participant.id),
-    isFeatureEnabled("ordering"),
+    getFeatureFlags(),
     getLatestParticipantOrder(participant.id),
+    getWeeklyQuestionUrl(),
+    getWeeklyQuestionStatus(participant.id, week),
   ]);
   const remaining = Math.max(0, 10 - redemptionCount);
   return (
@@ -66,13 +72,19 @@ export default async function ParticipantPage({
           <button type="submit" disabled={!stations.length}>{ui.participant.register}</button>
         </form>
       </Panel>
-      {orderingEnabled && participant.can_preorder && <Panel title={ui.participant.preorder}>
+      <Panel title={ui.participant.week}>
+        <p>{ui.participant.weekIntro}</p>
+        {weeklyQuestionComplete ? <p className="hint">{ui.participant.weekComplete}</p> : weeklyQuestionUrl ? <Link className="button-link" href={`/w/${code}/${week}`}>{ui.participant.weekLink}</Link> : <p className="hint">{ui.participant.weekUnavailable}</p>}
+      </Panel>
+      {features.ordering && participant.can_preorder && <Panel title={ui.participant.preorder}>
         {latestOrder?.status === "received" && <p>{latestOrder.number}</p>}
         <Link className="button-link" href={`/k/${code}/order`}>{ui.participant.preorderLink}</Link>
       </Panel>}
+      {features.digital_stamps && <Panel title={ui.participant.cardTitle}><Link className="button-link" href={`/k/${code}/stamps`}>{ui.participant.stampLink}</Link></Panel>}
+      {features.card_photos && <Panel title={ui.participant.cardTitle}><Link className="button-link" href={`/k/${code}/card-photo`}>{ui.participant.cardPhotoLink}</Link></Panel>}
       <Panel title={ui.participant.cardTitle}>
         <p className="participant-code">{code}</p>
-        <QrCode value={`/k/${code}`} alt={ui.participant.qrAlt} />
+        <QrCode value={participantPageUrl(code)} alt={ui.participant.qrAlt} />
       </Panel>
     </PublicPageTemplate>
   );
