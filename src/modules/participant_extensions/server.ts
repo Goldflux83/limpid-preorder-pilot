@@ -12,9 +12,24 @@ export async function getWeeklyQuestionStatus(participantId: string, weekNumber:
   return Boolean(data?.completed_at);
 }
 
-export async function markWeeklyQuestionComplete(participantId: string, weekNumber: number) {
-  const { data, error } = await createSupabaseAdminClient().rpc("mark_weekly_question_complete", { p_participant_id: participantId, p_week_number: weekNumber });
+export async function markWeeklyQuestionCompleteByAdmin(participantId: string, weekNumber: number, adminId: string) {
+  const { data, error } = await createSupabaseAdminClient().rpc("mark_weekly_question_complete", {
+    p_participant_id: participantId,
+    p_week_number: weekNumber,
+    p_admin_id: adminId,
+  });
   return !error && data === true;
+}
+
+export async function getWeeklyQuestionStatuses(participantIds: string[], weekNumber: number) {
+  if (!participantIds.length) return new Set<string>();
+  const { data } = await createSupabaseAdminClient()
+    .from("weekly_question_statuses")
+    .select("participant_id")
+    .in("participant_id", participantIds)
+    .eq("week_number", weekNumber)
+    .not("completed_at", "is", null);
+  return new Set((data ?? []).map((item) => item.participant_id));
 }
 
 export async function getDigitalStampState(participantId: string) {

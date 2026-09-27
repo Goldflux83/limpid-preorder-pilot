@@ -26,14 +26,14 @@ export default async function ParticipantPage({
   searchParams,
 }: {
   params: Promise<{ code: string }>;
-  searchParams: Promise<{ status?: string; daily?: string }>;
+  searchParams: Promise<{ status?: string; daily?: string; week?: string }>;
 }) {
   const { code: rawCode } = await params;
   const code = normalizeParticipantCode(rawCode);
   const participant = await getActiveParticipantByCode(code);
   if (!participant) notFound();
   const week = currentIsoWeek();
-  const [{ status, daily }, stations, redemptionCount, features, latestOrder, weeklyQuestionUrl, weeklyQuestionComplete, dailyAnswered] = await Promise.all([
+  const [{ status, daily, week: weekStatus }, stations, redemptionCount, features, latestOrder, weeklyQuestionUrl, weeklyQuestionComplete, dailyAnswered] = await Promise.all([
     searchParams,
     getStations(),
     getParticipantRedemptionCount(participant.id),
@@ -110,6 +110,7 @@ export default async function ParticipantPage({
       </Panel>
       <Panel title={ui.participant.week}>
         <p>{ui.participant.weekIntro}</p>
+        {weekStatus === "received" && <p className="hint">{ui.participant.weekReceived}</p>}
         {weeklyQuestionComplete ? <p className="hint">{ui.participant.weekComplete}</p> : weeklyQuestionUrl ? <Link className="button-link" href={`/w/${code}/${week}`}>{ui.participant.weekLink}</Link> : <p className="hint">{ui.participant.weekUnavailable}</p>}
       </Panel>
       {features.ordering && participant.can_preorder && <Panel title={ui.participant.preorder}>

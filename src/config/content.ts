@@ -41,6 +41,7 @@ export const content = {
       weekIntro: "De wekelijkse vragenlijst duurt ongeveer twee minuten.",
       weekLink: "Open vragenlijst",
       weekComplete: "Ingevuld",
+      weekReceived: "Dank je. Beheer verwerkt je vragenlijst.",
       weekUnavailable: "De wekelijkse vragenlijst is nog niet beschikbaar.",
       preorder: "Voorbestellen",
       noOpenOrder: "Je hebt nog geen open bestelling.",
@@ -217,6 +218,10 @@ export const content = {
       anonymizeWarning: "Deze actie is onomkeerbaar: voornamen, e-mails, vrije tekst en actieve toegangscodes worden gewist of ingetrokken.",
       anonymizeConfirmation: "Typ ANONIMISEREN om door te gaan",
       anonymize: "Anonimiseer persoonsgegevens",
+      weeklyStatus: "Weekvragen",
+      weekNumber: "Weeknummer",
+      markWeekComplete: "Markeer als ingevuld",
+      weekMarked: "Ingevuld",
     },
     pdf: { pilot: "pilot", participantCode: "Deelnemerscode" },
     features: {

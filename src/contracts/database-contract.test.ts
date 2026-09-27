@@ -75,6 +75,13 @@ describe("database security contracts", () => {
     expect(sql).toContain("daily_question_answered");
     expect(sql).toContain("to service_role");
   });
+
+  it("keeps weekly completion behind an administrator-only RPC", () => {
+    const sql = migration("202609270015_admin_weekly_questions.sql");
+    expect(sql).toContain("completed_by_admin_id");
+    expect(sql).toContain("actor_type, actor_id");
+    expect(sql).toContain("to service_role");
+  });
   it("rotates participant codes atomically and only through the service role", () => {
     const sql = migration("202609270011_atomic_participant_code_rotation.sql");
     expect(sql).toContain("for update");

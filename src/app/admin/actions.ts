@@ -8,6 +8,8 @@ import { isManageableFeatureKey, setFeatureFlag } from "@/modules/settings/featu
 import { reportOperationalTelemetry } from "@/modules/telemetry/operational";
 import { isExportDataset } from "@/modules/admin/policy";
 import { anonymizePilotPersonalData, convertWaitlistEntry, createExportToken, createParticipant, createProduct, revokeExportToken, rotateParticipantCode, setRetentionUntil, setWeeklyQuestionUrl, updateParticipant, updateProduct } from "@/modules/admin/server";
+import { markWeeklyQuestionCompleteByAdmin } from "@/modules/participant_extensions/server";
+import { validWeekNumber } from "@/modules/participant_extensions/policy";
 
 const optional = (value: FormDataEntryValue | null) => {
   const text = String(value ?? "").trim();
@@ -158,6 +160,16 @@ export async function convertWaitlistEntryAction(formData: FormData) {
 export async function setWeeklyQuestionUrlAction(formData: FormData) {
   const admin = await requireAdmin();
   await setWeeklyQuestionUrl(String(formData.get("weeklyQuestionUrl") ?? ""), admin.id);
+  revalidatePath("/admin");
+  revalidatePath("/k");
+}
+
+export async function markWeeklyQuestionCompleteAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const participantId = String(formData.get("participantId") ?? "");
+  const week = validWeekNumber(String(formData.get("week") ?? ""));
+  if (!participantId || !week) return;
+  await markWeeklyQuestionCompleteByAdmin(participantId, week, admin.id);
   revalidatePath("/admin");
   revalidatePath("/k");
 }
