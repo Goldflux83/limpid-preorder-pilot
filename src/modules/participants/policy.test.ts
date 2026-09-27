@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canRecordRedemption, isParticipantCode, normalizeParticipantCode } from "./policy";
+import { canRecordRedemption, isParticipantCode, isParticipantMutationAllowed, normalizeParticipantCode } from "./policy";
 
 describe("participant policy", () => {
   it("normalizes and excludes ambiguous participant code characters", () => {
@@ -12,5 +12,9 @@ describe("participant policy", () => {
   it("allows at most three self-reported redemptions per Amsterdam day", () => {
     expect(canRecordRedemption(2)).toBe(true);
     expect(canRecordRedemption(3)).toBe(false);
+  });
+  it("limits code-authenticated mutations per source per hour", () => {
+    expect(isParticipantMutationAllowed(19)).toBe(true);
+    expect(isParticipantMutationAllowed(20)).toBe(false);
   });
 });

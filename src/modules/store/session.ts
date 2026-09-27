@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "crypto";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { requiredRuntimeValue } from "@/lib/runtime-config";
 import {
   isPinAttemptAllowed,
   matchesStationCode,
@@ -17,7 +18,7 @@ export async function openStoreSession(stationCode: string, pin: string) {
   const address =
     requestHeaders.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
   const fingerprint = createHash("sha256")
-    .update(`${process.env.STORE_RATE_LIMIT_SALT ?? "local"}:${address}`)
+    .update(`${requiredRuntimeValue("STORE_RATE_LIMIT_SALT", "local")}:${address}`)
     .digest("hex");
   const admin = createSupabaseAdminClient();
   const { count } = await admin

@@ -1,6 +1,7 @@
 import { createHash } from "crypto";
 import { headers } from "next/headers";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { requiredRuntimeValue } from "@/lib/runtime-config";
 import { isSignupAttemptAllowed, isValidBooleanChoice, isValidEmail, normalizeEmail } from "./policy";
 
 export type WaitlistInput = { email: string; station: string; poster: string; frequency: string; when: string; price: string; priceOther: string; formats: string[]; wantsToJoin: string; consent: string; honeypot: string };
@@ -9,7 +10,7 @@ export async function createWaitlistSignup(input: WaitlistInput) {
   if (input.honeypot || !isValidEmail(input.email) || !input.station || input.consent !== "yes" || !isValidBooleanChoice(input.wantsToJoin)) return { result: "invalid" as const };
   const requestHeaders = await headers();
   const address = requestHeaders.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
-  const fingerprint = createHash("sha256").update(`${process.env.WAITLIST_RATE_LIMIT_SALT ?? "local"}:${address}`).digest("hex");
+  const fingerprint = createHash("sha256").update(`${requiredRuntimeValue("WAITLIST_RATE_LIMIT_SALT", "local")}:${address}`).digest("hex");
   const admin = createSupabaseAdminClient();
   const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
   const { count } = await admin.from("waitlist_attempts").select("id", { count: "exact", head: true }).eq("fingerprint_hash", fingerprint).gt("attempted_at", since);

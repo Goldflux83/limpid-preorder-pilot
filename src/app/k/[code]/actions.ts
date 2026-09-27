@@ -3,13 +3,13 @@
 import { redirect } from "next/navigation";
 import { reportOperationalTelemetry } from "@/modules/telemetry/operational";
 import { normalizeParticipantCode } from "@/modules/participants/policy";
-import { getActiveParticipantByCode, recordParticipantRedemption } from "@/modules/participants/server";
+import { getActiveParticipantByCode, isParticipantMutationAllowedForRequest, recordParticipantRedemption } from "@/modules/participants/server";
 import { recordDailyQuestion } from "@/modules/daily_questions/server";
 
 export async function registerRedemption(formData: FormData) {
   const code = normalizeParticipantCode(String(formData.get("code") ?? ""));
   const stationId = String(formData.get("stationId") ?? "");
-  const participant = await getActiveParticipantByCode(code);
+  const participant = await isParticipantMutationAllowedForRequest(code) ? await getActiveParticipantByCode(code) : null;
   if (!participant || !stationId) redirect(`/k/${code}`);
   const recorded = await recordParticipantRedemption(
     participant.id,
@@ -26,7 +26,7 @@ export async function registerRedemption(formData: FormData) {
 
 export async function answerDailyQuestion(formData: FormData) {
   const code = normalizeParticipantCode(String(formData.get("code") ?? ""));
-  const participant = await getActiveParticipantByCode(code);
+  const participant = await isParticipantMutationAllowedForRequest(code) ? await getActiveParticipantByCode(code) : null;
   const collected = formData.get("collected") === "yes";
   const recorded = participant && await recordDailyQuestion(participant.id, {
     collected,

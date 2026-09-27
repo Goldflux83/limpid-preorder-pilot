@@ -89,6 +89,12 @@ describe("database security contracts", () => {
     expect(sql).toContain("status = 'collected'");
     expect(sql).toContain("smiley is null");
   });
+  it("keeps participant action limits and direct event PII out of browser access", () => {
+    const sql = migration("202609270017_participant_action_rate_limits.sql");
+    expect(sql).toContain("participant_action_attempts");
+    expect(sql).toContain("enable row level security");
+    expect(sql).toContain("events_no_direct_personal_data");
+  });
   it("rotates participant codes atomically and only through the service role", () => {
     const sql = migration("202609270011_atomic_participant_code_rotation.sql");
     expect(sql).toContain("for update");

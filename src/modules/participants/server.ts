@@ -1,5 +1,8 @@
+import { createHash } from "crypto";
+import { headers } from "next/headers";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
-import { isParticipantCode, normalizeParticipantCode } from "./policy";
+import { requiredRuntimeValue } from "@/lib/runtime-config";
+import { isParticipantCode, isParticipantMutationAllowed, normalizeParticipantCode } from "./policy";
 
 export type ParticipantView = {
   id: string;
@@ -40,4 +43,16 @@ export async function recordParticipantRedemption(participantId: string, station
     p_add_on: validAddOn,
   });
   return !error;
+}
+
+export async function isParticipantMutationAllowedForRequest(code: string) {
+  const requestHeaders = await headers();
+  const address = requestHeaders.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
+  const fingerprint = createHash("sha256").update(`${requiredRuntimeValue("PARTICIPANT_RATE_LIMIT_SALT", "local")}:${address}:${code}`).digest("hex");
+  const admin = createSupabaseAdminClient();
+  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count } = await admin.from("participant_action_attempts").select("id", { count: "exact", head: true }).eq("fingerprint_hash", fingerprint).gt("attempted_at", since);
+  if (!isParticipantMutationAllowed(count ?? 0)) return false;
+  await admin.from("participant_action_attempts").insert({ fingerprint_hash: fingerprint });
+  return true;
 }
