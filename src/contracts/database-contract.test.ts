@@ -95,6 +95,9 @@ describe("database security contracts", () => {
     expect(sql).toContain("enable row level security");
     expect(sql).toContain("events_no_direct_personal_data");
   });
+  it("makes station operational controls database-managed", () => {
+    expect(migration("202609270018_station_management.sql")).toContain("store_pause_enabled");
+  });
   it("rotates participant codes atomically and only through the service role", () => {
     const sql = migration("202609270011_atomic_participant_code_rotation.sql");
     expect(sql).toContain("for update");

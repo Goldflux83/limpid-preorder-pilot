@@ -90,7 +90,7 @@ export default async function StorePage({
           <p>{ui.store.emptyHint}</p>
         </div>
       )}
-      {quickPause ? (
+      {station?.store_pause_enabled && (quickPause ? (
         <form action={resumeOrders}>
           <input type="hidden" name="station" value={code} />
           <StorePauseCountdown
@@ -108,7 +108,7 @@ export default async function StorePage({
             {ui.store.pause}
           </button>
         </form>
-      )}
+      ))}
       <form action={redeemVoucher}>
         <input type="hidden" name="station" value={code} />
         <label>

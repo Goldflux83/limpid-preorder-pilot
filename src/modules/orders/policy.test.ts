@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildAvailableSlots, isSlotWithinOpeningHours, orderFailure, validOrderFeedback, validOrderOption } from "./policy";
 
 const station = {
-  id: "station", code: "AMF", name: "Amersfoort", ordering_enabled: true, sound_enabled: false, daily_log_url: null,
+  id: "station", code: "AMF", name: "Amersfoort", active: true, ordering_enabled: true, sound_enabled: false, store_pause_enabled: true, daily_log_url: null,
   opening_hours: { friday: { open: "09:00", close: "11:00" } }, slot_minutes: 5, max_per_slot: 3, order_min_minutes: 15, order_max_minutes: 120,
 };
 
