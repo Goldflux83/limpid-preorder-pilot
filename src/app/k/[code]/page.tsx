@@ -11,7 +11,8 @@ import { FormField } from "@/components/ui/form-field";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel } from "@/components/ui/panel";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { registerRedemption } from "./actions";
+import { answerDailyQuestion, registerRedemption } from "./actions";
+import { getDailyQuestionAnswered } from "@/modules/daily_questions/server";
 import { getFeatureFlags } from "@/modules/settings/features";
 import { getLatestParticipantOrder } from "@/modules/orders/server";
 import { currentIsoWeek } from "@/modules/participant_extensions/policy";
@@ -25,14 +26,14 @@ export default async function ParticipantPage({
   searchParams,
 }: {
   params: Promise<{ code: string }>;
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; daily?: string }>;
 }) {
   const { code: rawCode } = await params;
   const code = normalizeParticipantCode(rawCode);
   const participant = await getActiveParticipantByCode(code);
   if (!participant) notFound();
   const week = currentIsoWeek();
-  const [{ status }, stations, redemptionCount, features, latestOrder, weeklyQuestionUrl, weeklyQuestionComplete] = await Promise.all([
+  const [{ status, daily }, stations, redemptionCount, features, latestOrder, weeklyQuestionUrl, weeklyQuestionComplete, dailyAnswered] = await Promise.all([
     searchParams,
     getStations(),
     getParticipantRedemptionCount(participant.id),
@@ -40,6 +41,7 @@ export default async function ParticipantPage({
     getLatestParticipantOrder(participant.id),
     getWeeklyQuestionUrl(),
     getWeeklyQuestionStatus(participant.id, week),
+    getDailyQuestionAnswered(participant.id),
   ]);
   const remaining = Math.max(0, 10 - redemptionCount);
   return (
@@ -50,6 +52,40 @@ export default async function ParticipantPage({
         <StatusBadge>{ui.participant.statuses[participant.status]}</StatusBadge>
       </div>
       <p className="muted">{ui.participant.validUntil}</p>
+      <Panel title={ui.participant.today}>
+        {dailyAnswered || daily === "answered" ? <p className="hint">{ui.participant.answered}</p> : <form action={answerDailyQuestion}>
+          <input type="hidden" name="code" value={code} />
+          <p>{ui.participant.question}</p>
+          <FormField label={ui.participant.question}>
+            <select name="collected" defaultValue="" required>
+              <option value="" disabled>{ui.participant.question}</option>
+              <option value="yes">{ui.participant.yes}</option>
+              <option value="no">{ui.participant.no}</option>
+            </select>
+          </FormField>
+          <FormField label={ui.participant.station}>
+            <select name="stationId" defaultValue="">
+              <option value="">{ui.participant.chooseStation}</option>
+              {stations.map((station) => <option key={station.id} value={station.id}>{station.name}</option>)}
+            </select>
+          </FormField>
+          <FormField label={ui.participant.addOn}>
+            <select name="addOn" defaultValue="">
+              <option value="">{ui.participant.addOn}</option>
+              {Object.entries(ui.participant.addOnOptions).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </FormField>
+          <FormField label={ui.participant.feeling}>
+            <select name="feeling" defaultValue="">
+              <option value="">{ui.participant.feeling}</option>
+              {[1, 2, 3, 4, 5].map((value) => <option key={value} value={value}>{value}</option>)}
+            </select>
+          </FormField>
+          {daily === "unavailable" && <p className="hint">{ui.participant.questionUnavailable}</p>}
+          <button type="submit">{ui.participant.answer}</button>
+        </form>}
+        <p className="muted">{ui.participant.reset}</p>
+      </Panel>
       <Panel title={ui.participant.redemption}>
         <p>
           {ui.participant.remainingBefore} <strong>{remaining} {ui.participant.remainingBetween} 10</strong> {ui.participant.remainingAfter}

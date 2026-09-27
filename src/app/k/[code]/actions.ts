@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { reportOperationalTelemetry } from "@/modules/telemetry/operational";
 import { normalizeParticipantCode } from "@/modules/participants/policy";
 import { getActiveParticipantByCode, recordParticipantRedemption } from "@/modules/participants/server";
+import { recordDailyQuestion } from "@/modules/daily_questions/server";
 
 export async function registerRedemption(formData: FormData) {
   const code = normalizeParticipantCode(String(formData.get("code") ?? ""));
@@ -21,4 +22,18 @@ export async function registerRedemption(formData: FormData) {
     outcome: recorded ? "success" : "rejected",
   });
   redirect(`/k/${code}${recorded ? "" : "?status=unavailable"}`);
+}
+
+export async function answerDailyQuestion(formData: FormData) {
+  const code = normalizeParticipantCode(String(formData.get("code") ?? ""));
+  const participant = await getActiveParticipantByCode(code);
+  const collected = formData.get("collected") === "yes";
+  const recorded = participant && await recordDailyQuestion(participant.id, {
+    collected,
+    stationId: collected ? String(formData.get("stationId") ?? "") || null : null,
+    addOn: collected ? String(formData.get("addOn") ?? "") || null : null,
+    feeling: collected ? Number(formData.get("feeling")) : null,
+  });
+  void reportOperationalTelemetry({ type: "server_action", action: "daily_question_answered", outcome: recorded ? "success" : "rejected" });
+  redirect(`/k/${code}${recorded ? "?daily=answered" : "?daily=unavailable"}`);
 }

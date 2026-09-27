@@ -67,6 +67,14 @@ describe("database security contracts", () => {
     expect(seed).not.toContain("insert into products");
     expect(seed).not.toContain("opening_hours");
   });
+
+  it("records one daily question per Amsterdam pilot day through a service-only RPC", () => {
+    const sql = migration("202609270014_daily_questions.sql");
+    expect(sql).toContain("interval '4 hours'");
+    expect(sql).toContain("daily question already answered");
+    expect(sql).toContain("daily_question_answered");
+    expect(sql).toContain("to service_role");
+  });
   it("rotates participant codes atomically and only through the service role", () => {
     const sql = migration("202609270011_atomic_participant_code_rotation.sql");
     expect(sql).toContain("for update");
