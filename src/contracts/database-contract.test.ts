@@ -57,4 +57,20 @@ describe("database security contracts", () => {
     expect(sql).toContain("alter table pilot_feature_flags enable row level security");
     expect(sql).toContain("'ordering', false");
   });
+  it("records participant self-redemptions atomically and keeps the seed free of invented operating data", () => {
+    const sql = migration("202609270010_participant_redemptions.sql");
+    const seed = readFileSync(join(process.cwd(), "supabase", "seed.sql"), "utf8");
+    expect(sql).toContain("record_self_redemption");
+    expect(sql).toContain("daily redemption limit reached");
+    expect(sql).toContain("to service_role");
+    expect(seed).toContain("('AMF', 'Amersfoort')");
+    expect(seed).not.toContain("insert into products");
+    expect(seed).not.toContain("opening_hours");
+  });
+  it("rotates participant codes atomically and only through the service role", () => {
+    const sql = migration("202609270011_atomic_participant_code_rotation.sql");
+    expect(sql).toContain("for update");
+    expect(sql).toContain("participant_code_rotated");
+    expect(sql).toContain("to service_role");
+  });
 });

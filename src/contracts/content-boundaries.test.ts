@@ -15,8 +15,10 @@ describe("content and configuration boundaries", () => {
     expect(source("src/lib/theme.ts")).not.toMatch(/NEXT_PUBLIC_FEATURE/);
     expect(source("src/modules/catalog/server.ts")).toContain("SUPABASE_SECRET_KEY");
   });
-  it("keeps the legacy participant URL while operational routes are English", () => {
-    expect(source("next.config.ts")).toContain('"/k/:code"');
+  it("keeps the canonical participant route and does not advertise role routes publicly", () => {
+    expect(source("src/app/k/[code]/page.tsx")).toContain("getActiveParticipantByCode");
+    expect(source("src/app/page.tsx")).not.toContain('href="/admin"');
+    expect(source("src/app/page.tsx")).not.toContain('href="/store');
     expect(source("src/app/store/[station]/page.tsx")).toContain("StoreKioskTemplate");
   });
 });

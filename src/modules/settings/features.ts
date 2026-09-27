@@ -1,6 +1,6 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { defaultFeatureFlags, isFeatureKey } from "./policy";
-export { featureKeys, isFeatureKey } from "./policy";
+export { featureKeys, isFeatureKey, isManageableFeatureKey, manageableFeatureKeys } from "./policy";
 export type { FeatureFlags, FeatureKey } from "./policy";
 
 import type { FeatureFlags, FeatureKey } from "./policy";
