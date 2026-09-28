@@ -3,6 +3,7 @@ export const content = {
     navigation: {
       privacy: "Privacyverklaring",
       footer: "Pilot van Limpid & Co in opdracht van NS Retail",
+      close: "Sluiten",
     },
     home: {
       eyebrow: "NS Retail Preorder Pilot",

@@ -12,6 +12,7 @@ describe("content and configuration boundaries", () => {
     expect(content).toContain("pinSubmit");
     expect(content).toContain("preorderUnavailable");
     expect(content).toContain("Review & enquête");
+    expect(content).toContain('close: "Sluiten"');
   });
   it("separates consecutive forms inside the same panel", () => {
     expect(source("src/app/globals.css")).toContain("section > form + form, section > div > form + form { margin-top:1.5rem; }");

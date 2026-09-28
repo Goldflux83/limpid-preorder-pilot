@@ -11,11 +11,47 @@ import { submitCardPhoto } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function CardPhotoPage({ params, searchParams }: { params: Promise<{ code: string }>; searchParams: Promise<{ status?: string }> }) {
+export default async function CardPhotoPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ code: string }>;
+  searchParams: Promise<{ status?: string }>;
+}) {
   const { code: rawCode } = await params;
   const { status } = await searchParams;
   const code = normalizeParticipantCode(rawCode);
-  const [participant, enabled] = await Promise.all([getActiveParticipantByCode(code), isFeatureEnabled("card_photos")]);
+  const [participant, enabled] = await Promise.all([
+    getActiveParticipantByCode(code),
+    isFeatureEnabled("card_photos"),
+  ]);
   if (!participant || !enabled) notFound();
-  return <PublicPageTemplate><PageHeader eyebrow={ui.cardPhoto.eyebrow} title={ui.cardPhoto.title} intro={ui.cardPhoto.intro} /><Panel title={ui.cardPhoto.title}>{status === "success" && <p className="hint">{ui.cardPhoto.success}</p>}{status === "unavailable" && <p className="hint">{ui.cardPhoto.unavailable}</p>}<form action={submitCardPhoto}><input type="hidden" name="code" value={code} /><FormField label={ui.cardPhoto.file}><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required /></FormField><button type="submit">{ui.cardPhoto.submit}</button></form></Panel></PublicPageTemplate>;
+  return (
+    <PublicPageTemplate>
+      <PageHeader
+        eyebrow={ui.cardPhoto.eyebrow}
+        title={ui.cardPhoto.title}
+        intro={ui.cardPhoto.intro}
+        closeHref={`/k/${code}`}
+      />
+      <Panel title={ui.cardPhoto.title}>
+        {status === "success" && <p className="hint">{ui.cardPhoto.success}</p>}
+        {status === "unavailable" && (
+          <p className="hint">{ui.cardPhoto.unavailable}</p>
+        )}
+        <form action={submitCardPhoto}>
+          <input type="hidden" name="code" value={code} />
+          <FormField label={ui.cardPhoto.file}>
+            <input
+              type="file"
+              name="photo"
+              accept="image/jpeg,image/png,image/webp"
+              required
+            />
+          </FormField>
+          <button type="submit">{ui.cardPhoto.submit}</button>
+        </form>
+      </Panel>
+    </PublicPageTemplate>
+  );
 }

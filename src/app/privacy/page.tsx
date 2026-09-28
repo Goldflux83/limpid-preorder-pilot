@@ -4,9 +4,13 @@ import { PageHeader } from "@/components/ui/page-header";
 export default function PrivacyPage() {
   return (
     <PublicPageTemplate className="page prose">
-        <PageHeader eyebrow={ui.privacy.eyebrow} title={ui.privacy.title} />
-        <p>{ui.privacy.body}</p>
-        <p>{ui.privacy.retention}</p>
+      <PageHeader
+        eyebrow={ui.privacy.eyebrow}
+        title={ui.privacy.title}
+        closeHref="/"
+      />
+      <p>{ui.privacy.body}</p>
+      <p>{ui.privacy.retention}</p>
     </PublicPageTemplate>
   );
 }
