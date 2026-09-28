@@ -24,9 +24,14 @@ describe("admin authentication feedback", () => {
   it("requires a verified TOTP factor and enables it for local Supabase", () => {
     expect(source("src/app/admin/login/actions.ts")).toContain('redirect("/admin/mfa/enroll")');
     expect(source("src/app/admin/mfa/actions.ts")).toContain('factorType: "totp"');
+    expect(source("src/app/admin/mfa/actions.ts")).toContain("issuer: ui.adminMfa.factorName");
     expect(source("src/modules/auth/admin.ts")).toContain('currentLevel !== "aal2"');
     const config = source("supabase/config.toml");
     expect(config).toContain("enroll_enabled = true");
     expect(config).toContain("verify_enabled = true");
+  });
+
+  it("removes trailing whitespace from Supabase's SVG QR-code URL", () => {
+    expect(source("src/app/admin/mfa/enroll/enrollment-form.tsx")).toContain("enrollment.qrCode.trimEnd()");
   });
 });

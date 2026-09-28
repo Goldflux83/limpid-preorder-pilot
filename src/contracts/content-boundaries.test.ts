@@ -11,6 +11,9 @@ describe("content and configuration boundaries", () => {
     expect(content).toContain("voucherSubmit");
     expect(content).toContain("pinSubmit");
   });
+  it("separates consecutive forms inside the same panel", () => {
+    expect(source("src/app/globals.css")).toContain("section > form + form, section > div > form + form { margin-top:1.5rem; }");
+  });
   it("does not expose functional flags through NEXT_PUBLIC variables", () => {
     expect(source("src/lib/theme.ts")).not.toMatch(/NEXT_PUBLIC_FEATURE/);
     expect(source("src/modules/catalog/server.ts")).toContain("SUPABASE_SECRET_KEY");

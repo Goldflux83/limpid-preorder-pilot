@@ -196,8 +196,7 @@ export const content = {
     admin: {
       eyebrow: "Beheer",
       title: "Pilotbeheer",
-      intro:
-        "Beheeraccounts gebruiken Supabase Auth met tweestapsverificatie. Deze lokale startweergave toont de in te richten onderdelen.",
+      intro: "Deze lokale startweergave toont de in te richten onderdelen.",
       ready: "Inrichten zodra beheerder is aangemeld.",
       stations: "Startstations",
       sections: [

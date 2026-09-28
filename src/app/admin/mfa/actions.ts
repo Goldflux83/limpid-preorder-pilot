@@ -21,6 +21,7 @@ export async function startTotpEnrollment(): Promise<TotpEnrollment | MfaEnrollm
   const { data, error } = await supabase.auth.mfa.enroll({
     factorType: "totp",
     friendlyName: ui.adminMfa.factorName,
+    issuer: ui.adminMfa.factorName,
   });
   if (error || !data.totp) return { error: "enroll" };
   return { factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret };
