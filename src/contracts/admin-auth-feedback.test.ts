@@ -8,6 +8,9 @@ describe("admin authentication feedback", () => {
   it("shows redirected login and MFA errors in their forms", () => {
     expect(source("src/app/admin/login/page.tsx")).toContain('role="alert"');
     expect(source("src/app/admin/login/page.tsx")).toContain("mfa-not-enrolled");
+    expect(source("src/app/admin/login/page.tsx")).toContain("email-not-confirmed");
+    expect(source("src/app/admin/login/page.tsx")).toContain("auth-unavailable");
+    expect(source("src/app/admin/login/page.tsx")).toContain("configuration");
     expect(source("src/app/admin/mfa/page.tsx")).toContain('role="alert"');
     expect(source("src/app/admin/mfa/enroll/enrollment-form.tsx")).toContain('role="alert"');
   });

@@ -297,6 +297,9 @@ export const content = {
       submit: "Inloggen",
       errors: {
         invalid: "E-mailadres of wachtwoord klopt niet.",
+        emailNotConfirmed: "Bevestig eerst je e-mailadres voordat je inlogt.",
+        authUnavailable: "De inlogservice is tijdelijk niet bereikbaar. Probeer het later opnieuw.",
+        configuration: "De lokale inlogconfiguratie is onvolledig. Controleer de Supabase-instellingen.",
         notAuthorized: "Dit account heeft geen toegang tot het beheer.",
         mfaNotEnrolled: "Dit beheerdersaccount heeft nog geen tweestapsverificatie ingesteld.",
         mfaUnavailable: "Tweestapsverificatie is tijdelijk niet beschikbaar. Probeer het later opnieuw.",

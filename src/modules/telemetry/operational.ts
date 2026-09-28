@@ -2,6 +2,7 @@ export type OperationalTelemetryEvent = {
   type: "server_started" | "server_action";
   action?: string;
   outcome?: "success" | "rejected" | "failed";
+  reason?: "invalid" | "email-not-confirmed" | "auth-unavailable" | "configuration";
   duration_ms?: number;
 };
 

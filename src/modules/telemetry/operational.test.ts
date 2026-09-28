@@ -6,6 +6,7 @@ describe("operational telemetry", () => {
     const payload = createOperationalPayload({ type: "server_action", action: "signup", outcome: "success" });
     expect(payload).toMatchObject({ source: "limpid-preorder-pilot", type: "server_action", action: "signup", outcome: "success" });
     expect(Object.keys(payload)).not.toContain("email");
+    expect(Object.keys(payload)).not.toContain("password");
   });
   it("does nothing when Goldflux telemetry is not configured", async () => {
     vi.stubEnv("GOLDFLUX_TELEMETRY_ENDPOINT", "");

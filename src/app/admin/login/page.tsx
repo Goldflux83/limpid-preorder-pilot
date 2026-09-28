@@ -10,6 +10,12 @@ export default async function AdminLoginPage({
   const errorMessage =
     error === "invalid"
       ? ui.adminLogin.errors.invalid
+      : error === "email-not-confirmed"
+      ? ui.adminLogin.errors.emailNotConfirmed
+      : error === "auth-unavailable"
+      ? ui.adminLogin.errors.authUnavailable
+      : error === "configuration"
+      ? ui.adminLogin.errors.configuration
       : error === "not-authorized"
       ? ui.adminLogin.errors.notAuthorized
       : error === "mfa-not-enrolled"
