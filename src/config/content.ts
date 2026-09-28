@@ -19,7 +19,8 @@ export const content = {
       feeling: "Hoe voelde dat?",
       answer: "Antwoord opslaan",
       answered: "Dank je, tot morgen.",
-      questionUnavailable: "Je antwoord kon niet worden opgeslagen. Probeer het later opnieuw.",
+      questionUnavailable:
+        "Je antwoord kon niet worden opgeslagen. Probeer het later opnieuw.",
       yes: "Ja",
       no: "Nee",
       reset: "Eén keer per dag; een nieuwe dag start om 04:00.",
@@ -36,7 +37,8 @@ export const content = {
         food: "Iets te eten",
         other: "Iets anders",
       },
-      registrationUnavailable: "Je registratie kon niet worden opgeslagen. Probeer het later opnieuw.",
+      registrationUnavailable:
+        "Je registratie kon niet worden opgeslagen. Probeer het later opnieuw.",
       week: "Deze week",
       weekIntro: "De wekelijkse vragenlijst duurt ongeveer twee minuten.",
       weekLink: "Open vragenlijst",
@@ -74,13 +76,16 @@ export const content = {
       option: "Optie",
       noOption: "Geen voorkeur",
       submit: "Bestellen",
-      unavailable: "Deze bestelling kon niet worden opgeslagen. Kies opnieuw een beschikbaar slot.",
+      unavailable:
+        "Deze bestelling kon niet worden opgeslagen. Kies opnieuw een beschikbaar slot.",
       slotUnavailable: "Dit tijdslot is net niet meer beschikbaar.",
       alternatives: "Kies een ander tijdslot",
-      noAlternatives: "Er zijn binnen het huidige bestelvenster geen andere vrije tijdsloten.",
+      noAlternatives:
+        "Er zijn binnen het huidige bestelvenster geen andere vrije tijdsloten.",
       chooseAlternative: "Kies {slot}",
       confirmation: "Je bestelling",
-      pickupInstructions: "Haal je drankje op bij de balie op het gekozen tijdslot.",
+      pickupInstructions:
+        "Haal je drankje op bij de balie op het gekozen tijdslot.",
       feedback: "Hoe was het ophalen?",
       feedbackQuestion: "Wat viel je op?",
       feedbackSubmit: "Feedback opslaan",
@@ -88,12 +93,19 @@ export const content = {
       smiley: "Waardering",
       status: "Status",
       cancel: "Bestelling annuleren",
-      cancelUnavailable: "Annuleren is niet meer mogelijk binnen tien minuten voor het tijdslot.",
+      cancelUnavailable:
+        "Annuleren is niet meer mogelijk binnen tien minuten voor het tijdslot.",
       noProducts: "Er zijn voor dit station nog geen producten beschikbaar.",
       noSlots: "Er zijn nu geen beschikbare tijdsloten.",
       slotAvailable: "Vrij",
       slotFull: "Vol",
-      statuses: { received: "Ontvangen", collected: "Afgehaald", not_collected: "Niet afgehaald", cancelled: "Geannuleerd", unknown: "Onbekend" },
+      statuses: {
+        received: "Ontvangen",
+        collected: "Afgehaald",
+        not_collected: "Niet afgehaald",
+        cancelled: "Geannuleerd",
+        unknown: "Onbekend",
+      },
     },
     stamps: {
       eyebrow: "Digitale stempelkaart",
@@ -103,7 +115,8 @@ export const content = {
       success: "Je stempel is opgeslagen.",
       station: "Station",
       chooseStation: "Kies een station",
-      unavailable: "Je stempel kon niet worden opgeslagen. Probeer het later opnieuw.",
+      unavailable:
+        "Je stempel kon niet worden opgeslagen. Probeer het later opnieuw.",
       voucher: "Jouw beloningsbon",
     },
     cardPhoto: {
@@ -113,12 +126,14 @@ export const content = {
       file: "Foto",
       submit: "Foto versturen",
       success: "Je foto is ontvangen.",
-      unavailable: "De foto kon niet worden opgeslagen. Gebruik JPEG, PNG of WebP tot 5 MB.",
+      unavailable:
+        "De foto kon niet worden opgeslagen. Gebruik JPEG, PNG of WebP tot 5 MB.",
     },
     store: {
       connected: "Verbonden · zojuist bijgewerkt",
       polling: "Polling actief · elke 10 seconden bijgewerkt",
-      disabled: "Het winkelscherm is tijdelijk uitgeschakeld door technisch beheer.",
+      disabled:
+        "Het winkelscherm is tijdelijk uitgeschakeld door technisch beheer.",
       empty: "Geen open bestellingen",
       emptyHint: "Nieuwe bestellingen verschijnen hier vanzelf.",
       pause: "Even geen bestellingen",
@@ -132,7 +147,8 @@ export const content = {
       voucher: "Beloningsbon inwisselen",
       voucherCode: "Boncode",
       voucherSubmit: "Bon inwisselen",
-      noShowTooEarly: "Een bestelling kan pas tien minuten na het tijdslot als niet afgehaald worden gesloten.",
+      noShowTooEarly:
+        "Een bestelling kan pas tien minuten na het tijdslot als niet afgehaald worden gesloten.",
     },
     signup: {
       eyebrow: "Wachtlijst",
@@ -150,12 +166,33 @@ export const content = {
       submit: "Aanmelden",
       frequencies: ["Dagelijks", "Wekelijks", "Soms"],
       priceOptions: ["€ 0", "€ 0,50", "€ 1", "Anders"],
-      formatOptions: ["Stempel", "Strippenkaart", "Korting", "Tegoed om te delen", "Abonnement", "Dalkorting"],
+      formatOptions: [
+        "Stempel",
+        "Strippenkaart",
+        "Korting",
+        "Tegoed om te delen",
+        "Abonnement",
+        "Dalkorting",
+      ],
       yes: "Ja",
       no: "Nee",
-      messages: { duplicate: "Dit e-mailadres is al aangemeld. Er is geen tweede bon gemaakt.", invalid: "Controleer je gegevens en probeer het opnieuw.", rate_limited: "Probeer het later opnieuw." },
+      messages: {
+        duplicate:
+          "Dit e-mailadres is al aangemeld. Er is geen tweede bon gemaakt.",
+        invalid: "Controleer je gegevens en probeer het opnieuw.",
+        rate_limited: "Probeer het later opnieuw.",
+      },
     },
-    voucher: { eyebrow: "Beloningsbon", title: "Je beloningsbon", intro: "Bewaar dit scherm en laat het zien aan de kassa.", cardTitle: "Eenmalige bon", station: "Station", validUntil: "Geldig tot", noExpiry: "Geen einddatum", instructions: "Laat dit scherm zien aan de kassa." },
+    voucher: {
+      eyebrow: "Beloningsbon",
+      title: "Je beloningsbon",
+      intro: "Bewaar dit scherm en laat het zien aan de kassa.",
+      cardTitle: "Eenmalige bon",
+      station: "Station",
+      validUntil: "Geldig tot",
+      noExpiry: "Geen einddatum",
+      instructions: "Laat dit scherm zien aan de kassa.",
+    },
     admin: {
       eyebrow: "Beheer",
       title: "Pilotbeheer",
@@ -225,7 +262,11 @@ export const content = {
       noWaitlist: "Er zijn geen wachtlijstinschrijvingen om om te zetten.",
       convert: "Maak deelnemer",
       exportUrl: "Eenmalig zichtbare export-URL",
-      statuses: { active: "Actief", paused: "Gepauzeerd", blocked: "Geblokkeerd" },
+      statuses: {
+        active: "Actief",
+        paused: "Gepauzeerd",
+        blocked: "Geblokkeerd",
+      },
       privacy: "Persoonsgegevens anonimiseren",
       retentionUntil: "Bewaartermijn tot en met",
       anonymizeWarning: "Deze actie is onomkeerbaar: voornamen, e-mails, vrije tekst en actieve toegangscodes worden gewist of ingetrokken.",
@@ -254,12 +295,21 @@ export const content = {
       email: "E-mailadres",
       password: "Wachtwoord",
       submit: "Inloggen",
+      errors: {
+        invalid: "E-mailadres of wachtwoord klopt niet.",
+        notAuthorized: "Dit account heeft geen toegang tot het beheer.",
+        mfaNotEnrolled: "Dit beheerdersaccount heeft nog geen tweestapsverificatie ingesteld.",
+      },
     },
     adminMfa: {
       eyebrow: "Beheer",
       title: "Tweestapsverificatie",
       code: "Code uit authenticator-app",
       submit: "Verifiëren",
+      errors: {
+        challenge: "De verificatie kon niet worden gestart. Probeer het opnieuw.",
+        invalid: "De verificatiecode klopt niet. Probeer het opnieuw.",
+      },
     },
     storeLogin: {
       eyebrow: "Winkel",
@@ -267,13 +317,16 @@ export const content = {
       submit: "Open winkelscherm",
     },
     privacy: {
-      eyebrow: "Privacy",
-      title: "Privacyverklaring pilot",
+      eyebrow: "Privacy in deze pilot",
+      title: "Privacyverklaring",
       body: "Deze pilot verwerkt een deelnemerscode en voornaam. De wachtlijst verwerkt daarnaast een e-mailadres voor de gevraagde beloningsbon. Er zijn geen betalingen, advertenties of externe analytics.",
       retention:
-        "Gegevens staan in de EU en worden na de ingestelde bewaartermijn geanonimiseerd.",
+        "Gegevens staan opgeslagen in de EU (Frankfurt, Duitsland) en worden na de ingestelde bewaartermijn geanonimiseerd.",
     },
-    catalog: { noStations: "Er zijn momenteel geen stations beschikbaar.", noProducts: "Er zijn momenteel geen producten beschikbaar." },
+    catalog: {
+      noStations: "Er zijn momenteel geen stations beschikbaar.",
+      noProducts: "Er zijn momenteel geen producten beschikbaar.",
+    },
   },
   en: {} as Record<string, never>,
 } as const;

@@ -8,7 +8,22 @@ Mobile-first webapp for pilot preorder drinks and signup waiting list with Next.
 2. Installeer afhankelijkheden met `npm install`.
 3. Start met `npm run dev`.
 
-De demo werkt zonder secrets. Gebruik tijdens ontwikkeling en test een Goldflux-Supabaseproject; maak pas na klantakkoord een afzonderlijk Limpid-productieproject in Frankfurt. Voer op ieder project dezelfde migraties en seed uit, maar zet geen wachtlijstdata tussen projecten over. `supabase/seed.sql` geeft AMF/GD en voorbeeldproducten een herhaalbare startpositie.
+Voor de database in Supabase:
+```
+npx supabase@2.118.0 init
+npx supabase@2.118.0 start
+npx supabase@2.118.0 db reset
+```
+
+`db reset` voert alle migraties én automatisch `supabase/seed.sql` uit. Daarna toont supabase status de lokale URL en keys. Zet die in .env.local:
+```
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_PUBLISHABLE_KEY=<anon/publishable key uit supabase status>
+SUPABASE_SECRET_KEY=<service_role/secret key uit supabase status>
+```
+
+Maak pas na klantakkoord een afzonderlijk Limpid-productieproject in Frankfurt.
 
 ## Privacy en toegang
 
