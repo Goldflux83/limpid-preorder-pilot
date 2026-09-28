@@ -19,35 +19,35 @@ export const content = {
       feeling: "Hoe voelde dat?",
       answer: "Antwoord opslaan",
       answered: "Dank je, tot morgen.",
-      questionUnavailable:
-        "Je antwoord kon niet worden opgeslagen. Probeer het later opnieuw.",
+      questionUnavailable: "Je antwoord kon niet worden opgeslagen. Probeer het later opnieuw.",
       yes: "Ja",
       no: "Nee",
       reset: "Eén keer per dag; een nieuwe dag start om 04:00.",
-      redemption: "Koffie gehaald",
+      redemption: "Koffie opgehaald",
       remainingBefore: "Nog ongeveer",
       remainingBetween: "van",
       remainingAfter: "strippen. Indicatie, je kaart telt.",
       station: "Station",
       chooseStation: "Kies een station",
-      register: "Registreer koffie",
+      register: "Ophalen registreren",
       addOn: "Wat heb je erbij gehaald?",
       addOnOptions: {
         nothing: "Niets",
         food: "Iets te eten",
         other: "Iets anders",
       },
-      registrationUnavailable:
-        "Je registratie kon niet worden opgeslagen. Probeer het later opnieuw.",
+      registrationUnavailable: "Je registratie kon niet worden opgeslagen. Probeer het later opnieuw.",
       week: "Deze week",
       weekIntro: "De wekelijkse vragenlijst duurt ongeveer twee minuten.",
       weekLink: "Open vragenlijst",
       weekComplete: "Ingevuld",
       weekReceived: "Dank je. Beheer verwerkt je vragenlijst.",
       weekUnavailable: "De wekelijkse vragenlijst is nog niet beschikbaar.",
-      preorder: "Voorbestellen",
+      preorder: "Bestellen",
       noOpenOrder: "Je hebt nog geen open bestelling.",
-      preorderLink: "Koffie voorbestellen",
+      preorderLink: "Koffie bestellen",
+      preorderUnavailable: "Voorbestellen is nog niet beschikbaar voor jouw deelname.",
+      review: "Review & enquête",
       cardTitle: "Jouw kaart",
       cardHint: "Toon altijd je fysieke kaart bij de kassa.",
       stampLink: "Open digitale stempelkaart",
@@ -64,9 +64,9 @@ export const content = {
       title: "Bestel je koffie",
       station: "1. Station",
       drink: "2. Drank",
+      details: "2. Bestelling",
       slot: "3. Tijdslot",
-      slotsUnavailable:
-        "Slots worden zichtbaar zodra technisch beheer voorbestellen activeert.",
+      slotsUnavailable: "Slots worden zichtbaar zodra technisch beheer voorbestellen activeert.",
       back: "Terug naar jouw pagina",
       open: "Nu open",
       closed: "Tijdelijk gesloten",
@@ -76,16 +76,13 @@ export const content = {
       option: "Optie",
       noOption: "Geen voorkeur",
       submit: "Bestellen",
-      unavailable:
-        "Deze bestelling kon niet worden opgeslagen. Kies opnieuw een beschikbaar slot.",
+      unavailable: "Deze bestelling kon niet worden opgeslagen. Kies opnieuw een beschikbaar slot.",
       slotUnavailable: "Dit tijdslot is net niet meer beschikbaar.",
       alternatives: "Kies een ander tijdslot",
-      noAlternatives:
-        "Er zijn binnen het huidige bestelvenster geen andere vrije tijdsloten.",
+      noAlternatives: "Er zijn binnen het huidige bestelvenster geen andere vrije tijdsloten.",
       chooseAlternative: "Kies {slot}",
       confirmation: "Je bestelling",
-      pickupInstructions:
-        "Haal je drankje op bij de balie op het gekozen tijdslot.",
+      pickupInstructions: "Haal je drankje op bij de balie op het gekozen tijdslot.",
       feedback: "Hoe was het ophalen?",
       feedbackQuestion: "Wat viel je op?",
       feedbackSubmit: "Feedback opslaan",
@@ -93,8 +90,7 @@ export const content = {
       smiley: "Waardering",
       status: "Status",
       cancel: "Bestelling annuleren",
-      cancelUnavailable:
-        "Annuleren is niet meer mogelijk binnen tien minuten voor het tijdslot.",
+      cancelUnavailable: "Annuleren is niet meer mogelijk binnen tien minuten voor het tijdslot.",
       noProducts: "Er zijn voor dit station nog geen producten beschikbaar.",
       noSlots: "Er zijn nu geen beschikbare tijdsloten.",
       slotAvailable: "Vrij",
@@ -115,8 +111,7 @@ export const content = {
       success: "Je stempel is opgeslagen.",
       station: "Station",
       chooseStation: "Kies een station",
-      unavailable:
-        "Je stempel kon niet worden opgeslagen. Probeer het later opnieuw.",
+      unavailable: "Je stempel kon niet worden opgeslagen. Probeer het later opnieuw.",
       voucher: "Jouw beloningsbon",
     },
     cardPhoto: {
@@ -126,14 +121,12 @@ export const content = {
       file: "Foto",
       submit: "Foto versturen",
       success: "Je foto is ontvangen.",
-      unavailable:
-        "De foto kon niet worden opgeslagen. Gebruik JPEG, PNG of WebP tot 5 MB.",
+      unavailable: "De foto kon niet worden opgeslagen. Gebruik JPEG, PNG of WebP tot 5 MB.",
     },
     store: {
       connected: "Verbonden · zojuist bijgewerkt",
       polling: "Polling actief · elke 10 seconden bijgewerkt",
-      disabled:
-        "Het winkelscherm is tijdelijk uitgeschakeld door technisch beheer.",
+      disabled: "Het winkelscherm is tijdelijk uitgeschakeld door technisch beheer.",
       empty: "Geen open bestellingen",
       emptyHint: "Nieuwe bestellingen verschijnen hier vanzelf.",
       pause: "Even geen bestellingen",
@@ -147,8 +140,7 @@ export const content = {
       voucher: "Beloningsbon inwisselen",
       voucherCode: "Boncode",
       voucherSubmit: "Bon inwisselen",
-      noShowTooEarly:
-        "Een bestelling kan pas tien minuten na het tijdslot als niet afgehaald worden gesloten.",
+      noShowTooEarly: "Een bestelling kan pas tien minuten na het tijdslot als niet afgehaald worden gesloten.",
     },
     signup: {
       eyebrow: "Wachtlijst",
@@ -164,8 +156,17 @@ export const content = {
       trial: "Wil je meedoen aan een proef?",
       consent: "Ik ga akkoord met de privacyverklaring.",
       submit: "Aanmelden",
-      frequencies: ["Dagelijks", "Wekelijks", "Soms"],
-      priceOptions: ["€ 0", "€ 0,50", "€ 1", "Anders"],
+      frequencies: [
+        "Dagelijks", 
+        "Wekelijks",
+        "Soms"
+      ],
+      priceOptions: [
+        "€ 0", 
+        "€ 0,50", 
+        "€ 1", 
+        "Anders"
+      ],
       formatOptions: [
         "Stempel",
         "Strippenkaart",
@@ -177,8 +178,7 @@ export const content = {
       yes: "Ja",
       no: "Nee",
       messages: {
-        duplicate:
-          "Dit e-mailadres is al aangemeld. Er is geen tweede bon gemaakt.",
+        duplicate: "Dit e-mailadres is al aangemeld. Er is geen tweede bon gemaakt.",
         invalid: "Controleer je gegevens en probeer het opnieuw.",
         rate_limited: "Probeer het later opnieuw.",
       },
@@ -276,7 +276,10 @@ export const content = {
       markWeekComplete: "Markeer als ingevuld",
       weekMarked: "Ingevuld",
     },
-    pdf: { pilot: "pilot", participantCode: "Deelnemerscode" },
+    pdf: { 
+      pilot: "pilot", 
+      participantCode: "Deelnemerscode" 
+    },
     features: {
       title: "Pilotonderdelen",
       enabled: "Aan",
@@ -332,8 +335,7 @@ export const content = {
       eyebrow: "Privacy in deze pilot",
       title: "Privacyverklaring",
       body: "Deze pilot verwerkt een deelnemerscode en voornaam. De wachtlijst verwerkt daarnaast een e-mailadres voor de gevraagde beloningsbon. Er zijn geen betalingen, advertenties of externe analytics.",
-      retention:
-        "Gegevens staan opgeslagen in de EU (Frankfurt, Duitsland) en worden na de ingestelde bewaartermijn geanonimiseerd.",
+      retention: "Gegevens staan opgeslagen in de EU (Frankfurt, Duitsland) en worden na de ingestelde bewaartermijn geanonimiseerd.",
     },
     catalog: {
       noStations: "Er zijn momenteel geen stations beschikbaar.",
