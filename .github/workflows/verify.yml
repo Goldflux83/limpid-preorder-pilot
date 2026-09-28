@@ -42,5 +42,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
         run: |
-          deployment_id="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" -f ref="$GITHUB_SHA" -f environment=tst -F transient_environment=true -F production_environment=false --jq .id)"
+          deployment_id="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" -f ref="$GITHUB_SHA" -f environment=tst -F transient_environment=true -F production_environment=false -F required_contexts[] --jq .id)"
           gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" -f state=success -f environment_url="$DEPLOYMENT_URL" -f log_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"

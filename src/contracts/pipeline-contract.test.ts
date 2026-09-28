@@ -11,6 +11,7 @@ describe("deployment pipeline contracts", () => {
     expect(workflow).toContain("needs: verify");
     expect(workflow).toContain("vercel@latest deploy --yes");
     expect(workflow).toContain("environment=tst");
+    expect(workflow).toContain("required_contexts[]");
     expect(workflow).toContain("deployments: write");
   });
 
