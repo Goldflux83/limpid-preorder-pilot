@@ -10,6 +10,8 @@ describe("content and configuration boundaries", () => {
     expect(content).toContain("adminSessions");
     expect(content).toContain("voucherSubmit");
     expect(content).toContain("pinSubmit");
+    expect(content).toContain("preorderUnavailable");
+    expect(content).toContain("Review & enquête");
   });
   it("separates consecutive forms inside the same panel", () => {
     expect(source("src/app/globals.css")).toContain("section > form + form, section > div > form + form { margin-top:1.5rem; }");

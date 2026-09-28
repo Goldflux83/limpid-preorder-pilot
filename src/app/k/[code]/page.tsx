@@ -11,7 +11,7 @@ import { FormField } from "@/components/ui/form-field";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel } from "@/components/ui/panel";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { answerDailyQuestion, registerRedemption } from "./actions";
+import { answerDailyQuestion, recordOrderFeedback, registerRedemption } from "./actions";
 import { getDailyQuestionAnswered } from "@/modules/daily_questions/server";
 import { getFeatureFlags } from "@/modules/settings/features";
 import { getLatestParticipantOrder } from "@/modules/orders/server";
@@ -26,14 +26,14 @@ export default async function ParticipantPage({
   searchParams,
 }: {
   params: Promise<{ code: string }>;
-  searchParams: Promise<{ status?: string; daily?: string; week?: string }>;
+  searchParams: Promise<{ status?: string; daily?: string; week?: string; feedback?: string }>;
 }) {
   const { code: rawCode } = await params;
   const code = normalizeParticipantCode(rawCode);
   const participant = await getActiveParticipantByCode(code);
   if (!participant) notFound();
   const week = currentIsoWeek();
-  const [{ status, daily, week: weekStatus }, stations, redemptionCount, features, latestOrder, weeklyQuestionUrl, weeklyQuestionComplete, dailyAnswered] = await Promise.all([
+  const [{ status, daily, week: weekStatus, feedback }, stations, redemptionCount, features, latestOrder, weeklyQuestionUrl, weeklyQuestionComplete, dailyAnswered] = await Promise.all([
     searchParams,
     getStations(),
     getParticipantRedemptionCount(participant.id),
@@ -52,6 +52,14 @@ export default async function ParticipantPage({
         <StatusBadge>{ui.participant.statuses[participant.status]}</StatusBadge>
       </div>
       <p className="muted">{ui.participant.validUntil}</p>
+      <Panel title={ui.participant.preorder}>
+        {features.ordering && participant.can_preorder ? <>
+          {latestOrder?.status === "received" && <p>{latestOrder.number}</p>}
+          <Link className="button-link" href={`/k/${code}/order`}>{ui.participant.preorderLink}</Link>
+        </> : <p className="hint">{ui.participant.preorderUnavailable}</p>}
+      </Panel>
+      <hr className="section-divider" />
+      <h2>{ui.participant.review}</h2>
       <Panel title={ui.participant.today}>
         {dailyAnswered || daily === "answered" ? <p className="hint">{ui.participant.answered}</p> : <form action={answerDailyQuestion}>
           <input type="hidden" name="code" value={code} />
@@ -86,7 +94,7 @@ export default async function ParticipantPage({
         </form>}
         <p className="muted">{ui.participant.reset}</p>
       </Panel>
-      <Panel title={ui.participant.redemption}>
+      {!features.ordering && <Panel title={ui.participant.redemption}>
         <p>
           {ui.participant.remainingBefore} <strong>{remaining} {ui.participant.remainingBetween} 10</strong> {ui.participant.remainingAfter}
         </p>
@@ -107,15 +115,21 @@ export default async function ParticipantPage({
           {!stations.length && <EmptyState>{ui.catalog.noStations}</EmptyState>}
           <button type="submit" disabled={!stations.length}>{ui.participant.register}</button>
         </form>
-      </Panel>
+      </Panel>}
       <Panel title={ui.participant.week}>
         <p>{ui.participant.weekIntro}</p>
         {weekStatus === "received" && <p className="hint">{ui.participant.weekReceived}</p>}
         {weeklyQuestionComplete ? <p className="hint">{ui.participant.weekComplete}</p> : weeklyQuestionUrl ? <Link className="button-link" href={`/w/${code}/${week}`}>{ui.participant.weekLink}</Link> : <p className="hint">{ui.participant.weekUnavailable}</p>}
       </Panel>
-      {features.ordering && participant.can_preorder && <Panel title={ui.participant.preorder}>
-        {latestOrder?.status === "received" && <p>{latestOrder.number}</p>}
-        <Link className="button-link" href={`/k/${code}/order`}>{ui.participant.preorderLink}</Link>
+      {(latestOrder?.status === "collected" && latestOrder.smiley === null || feedback === "recorded") && <Panel title={ui.order.feedback}>
+        {feedback === "recorded" ? <p className="hint">{ui.order.feedbackSaved}</p> : <form action={recordOrderFeedback}>
+          <input type="hidden" name="code" value={code} />
+          <input type="hidden" name="orderId" value={latestOrder?.id ?? ""} />
+          <FormField label={ui.order.smiley}><select name="smiley" defaultValue="" required><option value="" disabled>{ui.order.smiley}</option>{[1, 2, 3, 4, 5].map((value) => <option key={value} value={value}>{value}</option>)}</select></FormField>
+          <FormField label={ui.order.feedbackQuestion}><textarea name="openAnswer" /></FormField>
+          {feedback === "unavailable" && <p className="hint">{ui.order.unavailable}</p>}
+          <button type="submit">{ui.order.feedbackSubmit}</button>
+        </form>}
       </Panel>}
       {features.digital_stamps && <Panel title={ui.participant.cardTitle}><Link className="button-link" href={`/k/${code}/stamps`}>{ui.participant.stampLink}</Link></Panel>}
       {features.card_photos && <Panel title={ui.participant.cardTitle}><Link className="button-link" href={`/k/${code}/card-photo`}>{ui.participant.cardPhotoLink}</Link></Panel>}

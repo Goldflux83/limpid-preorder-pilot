@@ -5,6 +5,7 @@ import { reportOperationalTelemetry } from "@/modules/telemetry/operational";
 import { normalizeParticipantCode } from "@/modules/participants/policy";
 import { getActiveParticipantByCode, isParticipantMutationAllowedForRequest, recordParticipantRedemption } from "@/modules/participants/server";
 import { recordDailyQuestion } from "@/modules/daily_questions/server";
+import { recordParticipantOrderFeedback } from "@/modules/orders/server";
 
 export async function registerRedemption(formData: FormData) {
   const code = normalizeParticipantCode(String(formData.get("code") ?? ""));
@@ -36,4 +37,17 @@ export async function answerDailyQuestion(formData: FormData) {
   });
   void reportOperationalTelemetry({ type: "server_action", action: "daily_question_answered", outcome: recorded ? "success" : "rejected" });
   redirect(`/k/${code}${recorded ? "?daily=answered" : "?daily=unavailable"}`);
+}
+
+export async function recordOrderFeedback(formData: FormData) {
+  const code = normalizeParticipantCode(String(formData.get("code") ?? ""));
+  const participant = await isParticipantMutationAllowedForRequest(code) ? await getActiveParticipantByCode(code) : null;
+  const recorded = participant && await recordParticipantOrderFeedback(
+    participant.id,
+    String(formData.get("orderId") ?? ""),
+    Number(formData.get("smiley")),
+    String(formData.get("openAnswer") ?? "")
+  );
+  void reportOperationalTelemetry({ type: "server_action", action: "participant_order_feedback", outcome: recorded ? "success" : "rejected" });
+  redirect(`/k/${code}${recorded ? "?feedback=recorded" : "?feedback=unavailable"}`);
 }
