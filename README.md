@@ -25,6 +25,8 @@ SUPABASE_SECRET_KEY=<service_role/secret key uit supabase status>
 
 Maak pas na klantakkoord een afzonderlijk Limpid-productieproject in Frankfurt.
 
+Voor beheer is TOTP-MFA verplicht. Schakel in elk Supabase-project **MFA TOTP enrollment** en **MFA TOTP verification** in. Nieuwe actieve beheerders stellen hun authenticator in via `/admin`; bij toestelverlies verwijdert technisch beheer de MFA-factor in Supabase waarna de beheerder deze opnieuw instelt.
+
 ## Privacy en toegang
 
 `participants.id` is de onveranderlijke UUID. Publieke codes staan met historie in `participant_codes`; geen andere tabel koppelt op code. De `events`-tabel is append-only en bevat geen naam of e-mail. Er bestaan standaard geen browser-RLS-policies: serverroutes moeten eerst toegang valideren.

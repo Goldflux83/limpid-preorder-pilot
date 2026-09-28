@@ -14,6 +14,8 @@ export default async function AdminLoginPage({
       ? ui.adminLogin.errors.notAuthorized
       : error === "mfa-not-enrolled"
       ? ui.adminLogin.errors.mfaNotEnrolled
+      : error === "mfa-unavailable"
+      ? ui.adminLogin.errors.mfaUnavailable
       : null;
   return (
     <AuthPageTemplate>

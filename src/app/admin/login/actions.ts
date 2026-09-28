@@ -21,5 +21,10 @@ export async function signIn(formData: FormData) {
     await supabase.auth.signOut();
     redirect("/admin/login?error=not-authorized");
   }
+  const { data: factors, error: factorError } = await supabase.auth.mfa.listFactors();
+  if (factorError) redirect("/admin/login?error=mfa-unavailable");
+  if (!factors?.totp.some((factor) => factor.status === "verified")) {
+    redirect("/admin/mfa/enroll");
+  }
   redirect("/admin/mfa");
 }

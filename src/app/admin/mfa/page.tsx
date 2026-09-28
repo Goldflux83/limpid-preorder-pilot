@@ -1,11 +1,16 @@
 import { verifyTotp } from "./actions";
 import { ui } from "@/config/content";
 import { AuthPageTemplate } from "@/components/templates/page-template";
+import { requireActiveAdmin } from "@/modules/auth/admin";
+import { redirect } from "next/navigation";
 export default async function AdminMfaPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
+  const { supabase } = await requireActiveAdmin();
+  const { data: factors } = await supabase.auth.mfa.listFactors();
+  if (!factors?.totp.some((factor) => factor.status === "verified")) redirect("/admin/mfa/enroll");
   const { error } = await searchParams;
   const errorMessage =
     error === "challenge"
